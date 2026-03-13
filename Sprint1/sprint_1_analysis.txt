@@ -1,6 +1,6 @@
 Sprint 1 Analysis
 
-1.Have to implement application & login
+1.Have to implement registration & login
 
 2.Based on role redirect to users dashboard or admin dashboard
 
