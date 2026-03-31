@@ -32,6 +32,7 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
     private String gender;
+    @Column(unique = true)
     private String email;
     private String password;
     private String contactNumber;

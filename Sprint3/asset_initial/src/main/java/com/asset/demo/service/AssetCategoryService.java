@@ -28,6 +28,7 @@ public class AssetCategoryService {
 
     }
 
+
     public List<AssetCategory> getAllAssetCategory() {
         return assetCategoryRepository.findAll();
     }

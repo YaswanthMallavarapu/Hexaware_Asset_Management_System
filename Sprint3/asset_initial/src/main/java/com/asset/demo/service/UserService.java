@@ -49,7 +49,7 @@ public class UserService implements UserDetailsService {
 
     public UserResDto getUserById(long id) {
         User user=userRepository.findById(id)
-                .orElseThrow(()->new ResolutionException("user with given id not found"));
+                .orElseThrow(()->new ResourceNotFoundException("user with given id not found"));
         return UserMapper.mapToDto(user);
     }
 
