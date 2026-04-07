@@ -5,6 +5,9 @@ import com.asset.demo.exceptions.ResourceNotFoundException;
 import com.asset.demo.model.AssetCategory;
 import com.asset.demo.repository.AssetCategoryRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,21 +23,29 @@ public class AssetCategoryService {
         AssetCategory assetCategory=new AssetCategory();
         assetCategory.setCategoryName(assetCategoryReqDto.categoryName());
         assetCategory.setDescription(assetCategoryReqDto.text());
-        assetCategory.setQuantity(assetCategoryReqDto.quantity());
+        assetCategory.setQuantity(0);
         //when added both remaining and quantity wil be same
-        assetCategory.setRemaining(assetCategoryReqDto.quantity());
+        assetCategory.setRemaining(0);
         //save in DB
         assetCategoryRepository.save(assetCategory);
 
     }
 
 
-    public List<AssetCategory> getAllAssetCategory() {
-        return assetCategoryRepository.findAll();
+    public List<AssetCategory> getAllAssetCategory(int page, int size) {
+        Pageable pageable= PageRequest.of(page,size);
+        Page<AssetCategory> pageAssetCategory=assetCategoryRepository.findAll(pageable);
+        return pageAssetCategory
+                .toList();
     }
 
-    public AssetCategory getById(long categoryId) {
+
+    public AssetCategory getAssetCategoryById(long categoryId) {
         return assetCategoryRepository.findById(categoryId)
                 .orElseThrow(()->new ResourceNotFoundException("Category with id not found."));
+    }
+
+    public void updateAssetCategory(AssetCategory assetCategory) {
+        assetCategoryRepository.save(assetCategory);
     }
 }

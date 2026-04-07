@@ -8,8 +8,10 @@ public record AssetCategoryReqDto(
         @NotBlank(message="category cannot be blank")
         String categoryName,
 
-        String text,
+        @NotNull(message="text cannot be null")
+        @NotBlank(message="text cannot be blank")
+        String text
+        
 
-        int quantity
 ) {
 }

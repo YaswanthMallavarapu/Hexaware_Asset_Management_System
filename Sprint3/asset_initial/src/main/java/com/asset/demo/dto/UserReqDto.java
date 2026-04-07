@@ -33,9 +33,8 @@ public record UserReqDto(
 
         @NotBlank(message = "Password is required")
         @NotNull(message = "Password cannot be null")
-        String password,
+        String password
 
-        @NotNull(message = "Role must be provided")
-        Role role
+
 ) {
 }

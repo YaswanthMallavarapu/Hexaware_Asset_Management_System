@@ -1,11 +1,11 @@
 package com.asset.demo.mapper;
 
-import com.asset.demo.dto.AssetRequestReqdto;
+import com.asset.demo.dto.AssetRequestReqDto;
 import com.asset.demo.dto.AssetRequestResDto;
 import com.asset.demo.model.AssetRequest;
 
 public class AssetRequestMapper {
-    public static AssetRequest mapToEntity(AssetRequestReqdto assetRequestReqdto){
+    public static AssetRequest mapToEntity(AssetRequestReqDto assetRequestReqdto){
         AssetRequest assetRequest=new AssetRequest();
         assetRequest.setRemarks(assetRequestReqdto.remarks());
         return assetRequest;

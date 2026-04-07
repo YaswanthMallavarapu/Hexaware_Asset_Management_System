@@ -34,9 +34,11 @@ public class ServiceRequest {
     @NotNull(message = "Employee is required")
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
-    private User employee;
+    private Employee employee;
 
-
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Manager manager;
 
     // ---------------- DESCRIPTION ----------------
     @Size(max = 1000)

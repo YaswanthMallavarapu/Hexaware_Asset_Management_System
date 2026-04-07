@@ -1,16 +1,22 @@
 package com.asset.demo.service;
 
 import com.asset.demo.dto.ServiceRequestReqDto;
+import com.asset.demo.dto.ServiceRequestResDto;
+import com.asset.demo.enums.AllocationStatus;
 import com.asset.demo.enums.AssetStatus;
 import com.asset.demo.enums.ServiceStatus;
 import com.asset.demo.exceptions.ResourceNotFoundException;
-import com.asset.demo.model.Asset;
-import com.asset.demo.model.AssetAllocation;
-import com.asset.demo.model.ServiceRequest;
-import com.asset.demo.model.User;
+import com.asset.demo.mapper.ServiceRequestMapper;
+import com.asset.demo.model.*;
 import com.asset.demo.repository.ServiceRequestRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.function.ServerRequest;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -20,47 +26,57 @@ public class ServiceRequestService {
     private final UserService userService;
     private final AssetService assetService;
     private final AssetAllocationService assetAllocationService;
-    public void requestService(ServiceRequestReqDto serviceRequestReqDto, long employeeId, long assetId, long assetAllocationId) {
+    private final EmployeeService employeeService;
+    private final ManagerService managerService;
+
+    public void requestService(ServiceRequestReqDto serviceRequestReqDto, String username,long assetAllocationId) {
         //check for employee
-        User user=userService.getUserByGivenId(employeeId);
-        //check for asset
-        Asset asset=assetService.getAssetByGivenId(assetId);
-        //check for asset allocation
+        Employee employee=employeeService.getEmployeeByUsername(username);
+
         AssetAllocation assetAllocation=assetAllocationService.getAssetAllocationById(assetAllocationId);
-        //check if employee has this allocated asset with him
-        if(assetAllocation.getEmployee().getId()!=employeeId){
-            throw new ResourceNotFoundException("You can not request service for others assets.");
+        Asset asset=assetAllocation.getAsset();
+        Employee assetEmployee=assetAllocation.getEmployee();
+
+        if(employee!=assetEmployee){
+            throw new ResourceNotFoundException("You cannot request service for this asset");
         }
-        if(assetAllocation.getAsset().getId()!=assetId){
-            throw new ResourceNotFoundException("You can not request service for Asset that you dont have.");
+        if(assetAllocation.getStatus()!= AllocationStatus.ALLOCATED){
+            throw new ResourceNotFoundException("Invalid asset for request service.");
         }
+
+        asset.setStatus(AssetStatus.IN_SERVICE);
+        assetService.updateAsset(asset);
         //add details to service request
         ServiceRequest serviceRequest=new ServiceRequest();
-        serviceRequest.setEmployee(user);
+        serviceRequest.setEmployee(assetEmployee);
         serviceRequest.setAsset(asset);
         serviceRequest.setDescription(serviceRequestReqDto.description());
         //save assetRequest in DB
         serviceRequestRepository.save(serviceRequest);
     }
 
-    public void acceptRequest(long serviceRequestId) {
+    public void acceptRequest(String username,long serviceRequestId) {
         //get service request
         ServiceRequest serviceRequest=serviceRequestRepository.findById(serviceRequestId)
                 .orElseThrow(()->new ResourceNotFoundException("Invalid Service Request Id."));
+        Manager manager=managerService.getManagerByUsername(username);
         serviceRequest.setStatus(ServiceStatus.IN_PROGRESS);
         Asset asset=serviceRequest.getAsset();
         //update asset status
         asset.setStatus(AssetStatus.IN_SERVICE);
         asset=assetService.updateAsset(asset);
         serviceRequest.setAsset(asset);
+        serviceRequest.setManager(manager);
         //save updated request
         serviceRequestRepository.save(serviceRequest);
     }
 
-    public void rejectRequest(long serviceRequestId) {
+    public void rejectRequest(long serviceRequestId,String username) {
         //get service request
         ServiceRequest serviceRequest=serviceRequestRepository.findById(serviceRequestId)
                 .orElseThrow(()->new ResourceNotFoundException("Invalid Service Request Id."));
+        Manager manager=managerService.getManagerByUsername(username);
+        serviceRequest.setManager(manager);
         serviceRequest.setStatus(ServiceStatus.REJECTED);
         //save updated request
         serviceRequestRepository.save(serviceRequest);
@@ -78,5 +94,14 @@ public class ServiceRequestService {
         serviceRequest.setAsset(asset);
         //save updated request
         serviceRequestRepository.save(serviceRequest);
+    }
+
+    public List<ServiceRequestResDto> getRequestByUsername(String name, int page, int size) {
+        Pageable pageable= PageRequest.of(page,size);
+        Page<ServiceRequest> pageServiceRequest=serviceRequestRepository.getServiceRequestByUser(name,pageable);
+        return pageServiceRequest.toList()
+                .stream()
+                .map(ServiceRequestMapper::mapToDto)
+                .toList();
     }
 }

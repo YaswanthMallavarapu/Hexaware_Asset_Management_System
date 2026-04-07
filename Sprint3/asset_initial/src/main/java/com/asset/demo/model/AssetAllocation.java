@@ -1,6 +1,7 @@
 package com.asset.demo.model;
 
 import com.asset.demo.enums.AllocationStatus;
+import com.asset.demo.enums.ReturnRequestStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -31,8 +32,11 @@ public class AssetAllocation {
     @NotNull(message = "Employee is required")
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
-    private User employee;
+    private Employee employee;
 
+    @ManyToOne
+    @JoinColumn(name = "manager_id", nullable = false)
+    private Manager manager;
     // ---------------- ALLOCATION DATE ----------------
     @CreationTimestamp
 

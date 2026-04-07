@@ -1,6 +1,7 @@
 package com.asset.demo.service;
 
 import com.asset.demo.dto.UserResDto;
+import com.asset.demo.enums.AccountStatus;
 import com.asset.demo.enums.Role;
 import com.asset.demo.enums.UserStatus;
 import com.asset.demo.exceptions.ResourceNotFoundException;
@@ -32,160 +33,34 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Test
-    public void getUserByIdTestWhenExist(){
+    public void loadUserByUsernameTest(){
         User user=new User();
         user.setId(1L);
-        user.setFirstName("yaswanth");
-        user.setLastName("mallavarapu");
-        user.setContactNumber("6305820373");
-        user.setGender("MALE");
-        user.setDesignation("Junior Dev");
-        user.setRole(Role.EMPLOYEE);
-        user.setEmail("yash@gmail.com");
-        user.setPassword("abc@123");
-        user.setStatus(UserStatus.ACTIVE);
+        user.setUsername("Yaswanth");
+        user.setPassword("^@)(@&^@&#GUYSUYWVVSTYFSJ");
+        user.setAccountStatus(AccountStatus.APPROVED);
+        user.setRole(Role.ADMIN);
 
-        UserResDto dto=new UserResDto(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getDesignation(),
-                user.getStatus()
-        );
+        when(userRepository.getUserByUsername("Yaswanth")).thenReturn(user);
 
-       UserResDto dto1= new UserResDto(
-                1L,
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getDesignation(),
-                UserStatus.ON_LEAVE
-        );
-       when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
-        Assertions.assertEquals(dto,userService.getUserById(1L));
-        Assertions.assertNotEquals(dto1,userService.getUserById(1L));
+        Assertions.assertEquals(user,userService.loadUserByUsername("Yaswanth"));
     }
 
     @Test
-    public void getUserByIdTestWhenNotExist(){
-
-        //mocking when id not found
-        Mockito.when(userRepository.findById(11L)).thenReturn(Optional.empty());
-
-
-        //catching exception when id not found
-        Exception e=Assertions.assertThrows(ResourceNotFoundException.class,()->userService.getUserById(11L));
-
-        //check for error message
-        Assertions.assertEquals("user with given id not found",e.getMessage());
-
-
-    }
-
-    @Test
-    public void getUserByGivenIdTestWhenExist(){
+    public void insertUserTest(){
         User user=new User();
         user.setId(1L);
-        user.setFirstName("yaswanth");
-        user.setLastName("mallavarapu");
-        user.setContactNumber("6305820373");
-        user.setGender("MALE");
-        user.setDesignation("Junior Dev");
-        user.setRole(Role.EMPLOYEE);
-        user.setEmail("yash@gmail.com");
-        user.setPassword("abc@123");
-        user.setStatus(UserStatus.ACTIVE);
+        user.setUsername("Yaswanth");
+        user.setPassword("^@)(@&^@&#GUYSUYWVVSTYFSJ");
+        user.setAccountStatus(AccountStatus.APPROVED);
+        user.setRole(Role.ADMIN);
 
-        User user1=new User();
-        user.setId(1L);
-        user.setFirstName("yaswan");
-        user.setLastName("mallavarapu");
-        user.setContactNumber("6305820373");
-        user.setGender("MALE");
-        user.setDesignation("Junior Dev");
-        user.setRole(Role.EMPLOYEE);
-        user.setEmail("yash@gmail.com");
-        user.setPassword("abc@123");
-        user.setStatus(UserStatus.ACTIVE);
+        when(userRepository.save(user)).thenReturn(user);
 
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
-        Assertions.assertEquals(user,userService.getUserByGivenId(1L));
-        Assertions.assertNotEquals(user1,userService.getUserByGivenId(1L));
-    }
-
-
-    @Test
-    public void getUserByGivenIdTestWhenNotExist(){
-
-        //mocking when id not found
-        Mockito.when(userRepository.findById(11L)).thenReturn(Optional.empty());
-
-
-        //catching exception when id not found
-        Exception e=Assertions.assertThrows(ResourceNotFoundException.class,()->userService.getUserByGivenId(11L));
-
-        //check for error message
-        Assertions.assertEquals("User not found with id.",e.getMessage());
-
+        Assertions.assertEquals(user,userService.insertUser(user));
+        verify(userRepository,times(1)).save(user);
 
     }
 
 
-    @Test
-    public void getAll(){
-        User user=new User();
-        user.setId(1L);
-        user.setFirstName("yaswanth");
-        user.setLastName("mallavarapu");
-        user.setContactNumber("6305820373");
-        user.setGender("MALE");
-        user.setDesignation("Junior Dev");
-        user.setRole(Role.EMPLOYEE);
-        user.setEmail("yash@gmail.com");
-        user.setPassword("abc@123");
-        user.setStatus(UserStatus.ACTIVE);
-
-        User user1=new User();
-        user1.setId(1L);
-        user1.setFirstName("lokesh");
-        user1.setLastName("mekala");
-        user1.setContactNumber("63058XXXXX");
-        user1.setGender("MALE");
-        user1.setDesignation("Senior Dev");
-        user1.setRole(Role.ADMIN);
-        user1.setEmail("lokesh@gmail.com");
-        user1.setPassword("admin@123");
-        user1.setStatus(UserStatus.ACTIVE);
-
-        List<User>list=List.of(user,user1);
-
-
-        //testing for page=0 and size=2
-        Page<User> pageUser=new PageImpl<>(list);
-        int page=0;
-        int size=2;
-        Pageable pageable= PageRequest.of(page,size);
-        Mockito.when(userRepository.findAll(pageable)).thenReturn(pageUser);
-        Assertions.assertEquals(2,userService.getAllUsers(0,2).size());
-
-        //testing for page=0 and size=1
-        pageUser=new PageImpl<>(list.subList(0,1));
-        page=0;
-        size=1;
-        pageable= PageRequest.of(page,size);
-        Mockito.when(userRepository.findAll(pageable)).thenReturn(pageUser);
-        Assertions.assertEquals(1,userService.getAllUsers(0,1).size());
-
-        //testing for page=0 and size=3
-        pageUser=new PageImpl<>(list.subList(0,2));
-        page=0;
-        size=3;
-        pageable= PageRequest.of(page,size);
-        Mockito.when(userRepository.findAll(pageable)).thenReturn(pageUser);
-        Assertions.assertEquals(2,userService.getAllUsers(0,3).size());
-    }
 }

@@ -1,7 +1,7 @@
 package com.asset.demo.controller;
 
 import com.asset.demo.dto.AssetReqDto;
-import com.asset.demo.dto.AssetResdto;
+import com.asset.demo.dto.AssetResDto;
 import com.asset.demo.service.AssetService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -18,10 +18,10 @@ public class AssetController {
     private final AssetService assetService;
 
     /* Access : ADMIN  */
-    @PostMapping("/add/{categoryId}")
-    public ResponseEntity<?> addAsset(@Valid @RequestBody AssetReqDto assetReqDto,
-                         @PathVariable long categoryId){
-        assetService.addAsset(assetReqDto,categoryId);
+    @PostMapping("/add")
+    public ResponseEntity<?> addAsset(@Valid @RequestBody AssetReqDto assetReqDto
+                         ){
+        assetService.addAsset(assetReqDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .build();
@@ -31,20 +31,40 @@ public class AssetController {
     @GetMapping("/get-all")
     public ResponseEntity<?> getAllAssets(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
                                           @RequestParam(value = "size",required = false,defaultValue = "5")int size){
-        List<AssetResdto> list=assetService.getAllAssets(page,size);
+        List<AssetResDto> list=assetService.getAllAssets(page,size);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(list);
 
     }
+
+    @GetMapping("/get/status/{status}")
+    public ResponseEntity<?> getAssetByUser(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
+                                            @RequestParam(value = "size",required = false,defaultValue = "5")int size,
+                                            @PathVariable String status){
+       List<AssetResDto>list=assetService.getAssetByStatus(page,size,status);
+       return ResponseEntity
+               .status(HttpStatus.OK)
+               .body(list);
+    }
     /* Access : ADMIN , EMPLOYEE */
     @GetMapping("/get/{assetId}")
     public ResponseEntity<?> getAssetById(@PathVariable long assetId){
-       AssetResdto asset=assetService.getAssetById(assetId);
+       AssetResDto asset=assetService.getAssetById(assetId);
        return ResponseEntity
                .status(HttpStatus.OK)
                .body(asset);
 
     }
+
+    @GetMapping("/get/category/{categoryId}")
+    public ResponseEntity<?> getAssetByCategory(@PathVariable long categoryId){
+        List<AssetResDto> list=assetService.getAssetByCategory(categoryId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(list);
+    }
+
+
 
 }

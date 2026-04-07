@@ -1,18 +1,23 @@
 package com.asset.demo.service;
 
+import com.asset.demo.dto.AssetAllocationResDto;
 import com.asset.demo.enums.AllocationStatus;
 import com.asset.demo.enums.AssetStatus;
 import com.asset.demo.enums.RequestStatus;
+import com.asset.demo.enums.ReturnRequestStatus;
 import com.asset.demo.exceptions.ResourceNotFoundException;
-import com.asset.demo.model.Asset;
-import com.asset.demo.model.AssetAllocation;
-import com.asset.demo.model.AssetRequest;
-import com.asset.demo.model.User;
+import com.asset.demo.mapper.AssetAllocationMapper;
+import com.asset.demo.model.*;
 import com.asset.demo.repository.AssetAllocationRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Service
@@ -22,57 +27,43 @@ public class AssetAllocationService {
     private final UserService userService;
     private final AssetService assetService;
     private final AssetRequestService assetRequestService;
-    public void allocateAsset(long employeeId, long assetId, long assetRequestId) {
-        //check for employee
-        User user=userService.getUserByGivenId(employeeId);
-        //check for asset
-        Asset asset=assetService.getAssetByGivenId(assetId);
-        //get asset request
+    private final AssetCategoryService assetCategoryService;
+    private final ManagerService managerService;
+    private final EmployeeService employeeService;
+
+    public void allocateAsset(String username, long assetRequestId) {
         AssetRequest assetRequest=assetRequestService.getAssetRequestById(assetRequestId);
-        //check weather valid or not
-        if(assetRequest.getEmployee().getId()!=employeeId ||
-                assetRequest.getAsset().getId()!=assetId)
-            throw new ResourceNotFoundException("Invalid asset or employee for this asset allocation");
+        Manager manager=managerService.getManagerByUsername(username);
+        Asset asset=assetRequest.getAsset();
         // check weather the asset is available
         if(asset.getStatus()!=AssetStatus.AVAILABLE)
             throw new ResourceNotFoundException("Asset not available at the moment.");
-
+        Employee employee=assetRequest.getEmployee();
         // make allocation true
         assetRequest.setStatus(RequestStatus.APPROVED);
+
         assetRequestService.updateAssetRequestStatus(assetRequest);
         asset.setStatus(AssetStatus.ALLOCATED);
         assetService.updateAsset(asset);
+        AssetCategory assetCategory=asset.getCategory();
+        assetCategory.setRemaining(assetCategory.getRemaining()-1);
+        assetCategoryService.updateAssetCategory(assetCategory);
         //add employee and asset to assetAllocation
         AssetAllocation assetAllocation=new AssetAllocation();
-        assetAllocation.setEmployee(user);
+        assetAllocation.setEmployee(employee);
         assetAllocation.setAsset(asset);
+        assetAllocation.setManager(manager);
         //save asset allocation in DB
         assetAllocationRepository.save(assetAllocation);
     }
 
-    public void rejectAsset(long employeeId, long assetId, long assetRequestId) {
-        //check for employee
-        User user=userService.getUserByGivenId(employeeId);
-        //check for asset
-        Asset asset=assetService.getAssetByGivenId(assetId);
-        //get asset request
+    public void rejectAsset(long assetRequestId) {
         AssetRequest assetRequest=assetRequestService.getAssetRequestById(assetRequestId);
-        //check weather valid or not
-        if(assetRequest.getEmployee().getId()!=employeeId ||
-                assetRequest.getAsset().getId()!=assetId)
-            throw new ResourceNotFoundException("Invalid asset or employee for this asset allocation");
-        //make allocation rejected
-//        if(assetRequest.getStatus()!=RequestStatus.PENDING)
-//            throw new ResourceNotFoundException("You can reject a asset that is already approved or rejected");
+       // Manager manager=managerService.getManagerByUsername(username);
+
         assetRequest.setStatus(RequestStatus.REJECTED);
         assetRequestService.updateAssetRequestStatus(assetRequest);
-//        as asset request is rejected there is no need to add it in asset allocation
-//        //add employee and asset to assetAllocation
-//        AssetAllocation assetAllocation=new AssetAllocation();
-//        assetAllocation.setEmployee(user);
-//        assetAllocation.setAsset(asset);
-//        //save asset allocation in DB
-//        assetAllocationRepository.save(assetAllocation);
+
     }
 
     public AssetAllocation getAssetAllocationById(long assetAllocationId) {
@@ -80,28 +71,61 @@ public class AssetAllocationService {
                 .orElseThrow(()->new ResourceNotFoundException("Invalid Asset Allocation Id."));
     }
 
-    public void returnAsset(long employeeId, long assetId, long assetAllocationId) {
-        //check for employee
-        User user=userService.getUserByGivenId(employeeId);
-        //check for asset
-        Asset asset=assetService.getAssetByGivenId(assetId);
+    public void returnAsset(String username,long assetAllocationId) {
+
+        Employee loggedUser=employeeService.getEmployeeByUsername(username);
         //get assetAllocation
         AssetAllocation assetAllocation=getAssetAllocationById(assetAllocationId);
-        //check request is valid or not
-        if(assetAllocation.getEmployee().getId()!=employeeId ||
-        assetAllocation.getAsset().getId()!=assetId)
-            throw new ResourceNotFoundException("Invalid return request");
-        //update allocation status to returned and set returned date
-        if(assetAllocation.getStatus()!=AllocationStatus.ALLOCATED)
-            throw new ResourceNotFoundException("You can not return an asset that you dont have.");
-        assetAllocation.setStatus(AllocationStatus.RETURNED);
-        assetAllocation.setReturnDate(LocalDate.now());
+        Employee employee=assetAllocation.getEmployee();
 
-        //update asset status to available
-        asset.setStatus(AssetStatus.AVAILABLE);
-        //save updated statuses in DB
-        assetService.updateAsset(asset);
+        //verify user
+        if(loggedUser!=employee){
+            throw new ResourceNotFoundException("You cannot post return request for asset you don't have");
+        }
+        if(assetAllocation.getStatus()!=AllocationStatus.ALLOCATED){
+            throw new ResourceNotFoundException("Invalid asset return request.");
+        }
+
+        assetAllocation.setStatus(AllocationStatus.RETURN_REQUESTED);
         assetAllocationRepository.save(assetAllocation);
 
+    }
+
+    public List<AssetAllocationResDto> getAllAllocatedByUser(String name, int page, int size) {
+        Pageable pageable= PageRequest.of(page,size);
+        Page<AssetAllocation> pageAllocations=assetAllocationRepository.getByUsername(name,pageable);
+        return pageAllocations
+                .toList()
+                .stream()
+                .map(AssetAllocationMapper::mapToDto)
+                .toList();
+    }
+
+    public List<AssetAllocation> getAllAllocatedAssets() {
+        return assetAllocationRepository.getAllAllocatedAssets();
+    }
+
+    public void acceptReturnRequest(long assetAllocationId) {
+        AssetAllocation assetAllocation=assetAllocationRepository.findById(assetAllocationId)
+                .orElseThrow(()->new ResourceNotFoundException("Invalid Asset Allocation Id."));
+        assetAllocation.setStatus(AllocationStatus.RETURNED);
+        Asset asset=assetAllocation.getAsset();
+        asset.setStatus(AssetStatus.AVAILABLE);
+        AssetCategory category=asset.getCategory();
+        category.setRemaining(category.getRemaining()+1);
+        assetService.updateAsset(asset);
+        assetAllocation.setReturnDate(LocalDate.now());
+        assetAllocationRepository.save(assetAllocation);
+    }
+
+    public List<AssetAllocationResDto> getAllByStatus(String status, int page, int size) {
+        Pageable pageable=PageRequest.of(page,size);
+        AllocationStatus status1=AllocationStatus.valueOf(status);
+        Page<AssetAllocation>pageAllocation=assetAllocationRepository.getAllByStatus(status1,pageable);
+        return pageAllocation
+                .toList()
+                .stream()
+                .map(AssetAllocationMapper::mapToDto)
+                .toList();
     }
 }

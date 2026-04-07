@@ -30,10 +30,24 @@ public class AssetCategoryController {
 
     /* Access : ADMIN , EMPLOYEE */
     @GetMapping("/get-all")
-    public ResponseEntity<?> getAllAssetCategory(){
-        List<AssetCategory> list=assetCategoryService.getAllAssetCategory();
+    public ResponseEntity<List<AssetCategory>> getAllAssetCategory(@RequestParam(value = "page",required = false,defaultValue = "0") int page,
+                                                 @RequestParam(value = "size",required = false,defaultValue = "5")int size){
+        List<AssetCategory> list=assetCategoryService.getAllAssetCategory(page,size);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(list);
     }
+
+    /* Access : ADMIN , EMPLOYEE */
+    @GetMapping("/get/{categoryId}")
+    public ResponseEntity<AssetCategory> getAssetCategoryById(@PathVariable long categoryId){
+        AssetCategory assetCategory=assetCategoryService.getAssetCategoryById(categoryId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(assetCategory);
+    }
+
+
+
+
 }

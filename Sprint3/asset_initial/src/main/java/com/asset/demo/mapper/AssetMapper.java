@@ -1,7 +1,7 @@
 package com.asset.demo.mapper;
 
 import com.asset.demo.dto.AssetReqDto;
-import com.asset.demo.dto.AssetResdto;
+import com.asset.demo.dto.AssetResDto;
 import com.asset.demo.model.Asset;
 
 public class AssetMapper {
@@ -14,8 +14,8 @@ public class AssetMapper {
         asset.setAssetValue(assetReqDto.price());
         return asset;
     }
-    public static AssetResdto mapToDto(Asset asset){
-        return new AssetResdto(
+    public static AssetResDto mapToDto(Asset asset){
+        return new AssetResDto(
                 asset.getId(),
                 asset.getAssetNo(),
                 asset.getAssetName(),

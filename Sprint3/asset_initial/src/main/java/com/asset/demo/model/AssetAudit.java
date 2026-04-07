@@ -22,30 +22,13 @@ public class AssetAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ---------------- ASSET ----------------
-    @NotNull(message = "Asset is required")
-    @ManyToOne
-    @JoinColumn(name = "asset_id", nullable = false)
-    private Asset asset;
-
-    // ---------------- EMPLOYEE ----------------
-    @NotNull(message = "Employee is required")
-    @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
-    private User employee;
 
     // ---------------- AUDIT DATE ----------------
     @CreationTimestamp
     @Column(name = "audit_date", updatable = false)
     private Instant auditDate;
 
-    // ---------------- STATUS ----------------
-    @Enumerated(EnumType.STRING)
-    @Column(length = 30)
-    private AuditStatus status = AuditStatus.PENDING;
-
-    // ---------------- REMARKS ----------------
-    @Size(max = 1000)
-    @Column(columnDefinition = "TEXT")
-    private String remarks;
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Manager manager;
 }

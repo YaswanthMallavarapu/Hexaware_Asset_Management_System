@@ -26,7 +26,7 @@ public class AssetRequest {
     @NotNull(message = "Employee is required")
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
-    private User employee;
+    private Employee employee;
 
 
     @ManyToOne

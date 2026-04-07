@@ -19,6 +19,9 @@ public record AssetReqDto(
         @NotBlank(message="assetModel cannot be blank")
         String assetModel,
 
+        @NotNull(message="assetCategoryId cannot be null")
+        long assetCategoryId,
+
         LocalDate manufacturedDate,
 
         BigDecimal price

@@ -23,6 +23,7 @@ public class Asset {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     // ---------------- ASSET NUMBER ----------------
     @NotBlank(message = "Asset number is required")
     @Size(max = 100)

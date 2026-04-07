@@ -1,5 +1,6 @@
 package com.asset.demo.config;
 
+import com.asset.demo.exceptions.ResourceNotFoundException;
 import com.asset.demo.service.UserService;
 import com.asset.demo.util.JwtUtility;
 import jakarta.servlet.FilterChain;
@@ -38,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails = userService.loadUserByUsername(username);
-
+               
                 if (jwtUtility.validateToken(jwt, userDetails.getUsername())) {
 
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
@@ -49,6 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
 
             }
+
             filterChain.doFilter(request,response);
         }
         catch(Exception e){

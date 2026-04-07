@@ -21,6 +21,7 @@ public class AuthController {
     @GetMapping("/login")
     public ResponseEntity<?> login(Principal principal){
         String loggedInUser = principal.getName();
+//        System.out.println(principal);
         Map<String,String> map = new HashMap<>();
         map.put("token", jwtUtility.generateToken(loggedInUser));
         return ResponseEntity.status(HttpStatus.OK)

@@ -1,13 +1,8 @@
 package com.asset.demo.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jdk.jfr.Category;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public record AssetResdto(
+public record AssetResDto(
         long id,
 
         String assetNo,
