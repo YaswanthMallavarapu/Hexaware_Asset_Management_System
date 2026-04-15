@@ -84,4 +84,8 @@ public class AssetService {
                 .map(AssetMapper::mapToDto)
                 .toList();
     }
+
+    public long getCount() {
+        return assetRepository.count();
+    }
 }

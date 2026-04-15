@@ -112,7 +112,8 @@ public class AssetServiceTest {
                 asset.getAssetName(),
                 asset.getAssetModel(),
                 asset.getManufacturingDate(),
-                asset.getCategory().getId()
+                asset.getCategory().getId(),
+                asset.getStatus()
         );
 
         when(assetRepository.findById(1L)).thenReturn(Optional.of(asset));
@@ -273,14 +274,16 @@ public class AssetServiceTest {
                 asset.getAssetName(),
                 asset.getAssetModel(),
                 asset.getManufacturingDate(),
-                asset.getCategory().getId());
+                asset.getCategory().getId(),
+                asset.getStatus());
         AssetResDto assetResDto1 = new AssetResDto(
                 asset1.getId(),
                 asset1.getAssetNo(),
                 asset1.getAssetName(),
                 asset1.getAssetModel(),
                 asset1.getManufacturingDate(),
-                asset1.getCategory().getId()
+                asset1.getCategory().getId(),
+                asset.getStatus()
         );
         List<AssetResDto>reslist=List.of(assetResDto,assetResDto1);
         when(assetRepository.getAssetByCategory(1L)).thenReturn(list);
@@ -320,14 +323,16 @@ public class AssetServiceTest {
                 asset.getAssetName(),
                 asset.getAssetModel(),
                 asset.getManufacturingDate(),
-                asset.getCategory().getId());
+                asset.getCategory().getId(),
+                asset.getStatus());
         AssetResDto assetResDto1 = new AssetResDto(
                 asset1.getId(),
                 asset1.getAssetNo(),
                 asset1.getAssetName(),
                 asset1.getAssetModel(),
                 asset1.getManufacturingDate(),
-                asset1.getCategory().getId()
+                asset1.getCategory().getId(),
+                asset1.getStatus()
         );
         List<AssetResDto>reslist=List.of(assetResDto,assetResDto1);
         Page<AssetResDto>pageAsset=new PageImpl<>(reslist);

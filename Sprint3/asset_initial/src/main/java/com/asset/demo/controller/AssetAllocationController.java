@@ -14,11 +14,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/asset-allocation")
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173/")
 public class AssetAllocationController {
     private final AssetAllocationService assetAllocationService;
 
     /* Access : ADMIN */
-    @PostMapping("/allocate/{assetRequestId}")
+    @PutMapping("/allocate/{assetRequestId}")
     public ResponseEntity<?> allocateAsset(Principal principal,
                                            @PathVariable long assetRequestId){
         assetAllocationService.allocateAsset(principal.getName(),assetRequestId);
@@ -29,7 +30,7 @@ public class AssetAllocationController {
     }
 
     /* Access : ADMIN */
-    @PostMapping("/reject/{assetRequestId}")
+    @PutMapping("/reject/{assetRequestId}")
     public ResponseEntity<?> rejectRequest(@PathVariable long assetRequestId){
         assetAllocationService.rejectAsset(assetRequestId);
         return ResponseEntity
@@ -95,6 +96,14 @@ public class AssetAllocationController {
                 .status(HttpStatus.OK)
                 .body(list);
 
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getAdminsCount(){
+        long count=assetAllocationService.getCount();
+        return ResponseEntity
+                .ok()
+                .body(count);
     }
 
 

@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/asset-request")
+@CrossOrigin(origins = "http://localhost:5173/")
 public class AssetRequestController {
 
     private final AssetRequestService assetRequestService;
@@ -62,6 +63,13 @@ public class AssetRequestController {
                 .status(HttpStatus.OK)
                 .body(list);
 
+    }
+    @GetMapping("/count")
+    public ResponseEntity<Long> getAdminsCount(){
+        long count=assetRequestService.getCount();
+        return ResponseEntity
+                .ok()
+                .body(count);
     }
 
 }

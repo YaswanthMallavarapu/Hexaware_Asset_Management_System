@@ -82,4 +82,8 @@ public class AssetRequestService {
                 .map(AssetRequestMapper::mapToDto)
                 .toList();
     }
+
+    public long getCount() {
+        return assetRequestRepository.count();
+    }
 }

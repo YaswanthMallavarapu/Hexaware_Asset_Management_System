@@ -48,4 +48,8 @@ public class AssetCategoryService {
     public void updateAssetCategory(AssetCategory assetCategory) {
         assetCategoryRepository.save(assetCategory);
     }
+
+    public long getCount() {
+        return assetCategoryRepository.count();
+    }
 }

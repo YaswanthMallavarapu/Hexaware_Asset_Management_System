@@ -10,7 +10,8 @@ public record EmployeeResDto(
         String contactNumber,
         String designation,
         UserStatus status,
-        long userId
+        long userId,
+        AccountStatus accountStatus
 
 ) {
 }

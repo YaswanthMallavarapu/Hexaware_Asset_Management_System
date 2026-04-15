@@ -10,4 +10,10 @@ public interface AdminRepository extends JpaRepository<Admin,Long> {
      where a.user.username=?1
 """)
     Admin getAdminByUsername(String username);
+
+    @Query("""
+    select a from Admin a
+    where a.user.username=?1
+""")
+    Admin findByUsername(String name);
 }

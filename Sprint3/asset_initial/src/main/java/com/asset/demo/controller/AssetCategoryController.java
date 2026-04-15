@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/asset-category")
+@CrossOrigin(origins = "http://localhost:5173/")
 public class AssetCategoryController {
     private final AssetCategoryService assetCategoryService;
 
@@ -47,6 +48,13 @@ public class AssetCategoryController {
                 .body(assetCategory);
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Long> getAdminsCount(){
+        long count=assetCategoryService.getCount();
+        return ResponseEntity
+                .ok()
+                .body(count);
+    }
 
 
 

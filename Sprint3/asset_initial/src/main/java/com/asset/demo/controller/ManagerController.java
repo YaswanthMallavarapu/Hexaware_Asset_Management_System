@@ -1,6 +1,7 @@
 package com.asset.demo.controller;
 
 import com.asset.demo.dto.EmployeeResDto;
+import com.asset.demo.dto.ManagerDto;
 import com.asset.demo.dto.ManagerReqDto;
 import com.asset.demo.dto.ManagerResDto;
 import com.asset.demo.model.Manager;
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/manager")
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173/")
 public class ManagerController {
 
     private final ManagerService managerService;
@@ -55,5 +57,30 @@ public class ManagerController {
             .status(HttpStatus.ACCEPTED)
             .build();
 
+    }
+    @GetMapping("/count")
+    public ResponseEntity<Long> getAdminsCount(){
+        long count=managerService.getCount();
+        return ResponseEntity
+                .ok()
+                .body(count);
+    }
+    @GetMapping("/get-all/status/{status}")
+    public ResponseEntity<List<ManagerResDto>> getAllManagersByStatus(@RequestParam(value = "page",required = false,defaultValue = "0") int page,
+                                                              @RequestParam(value = "size",required = false,defaultValue = "5")int size,
+                                                                      @PathVariable String status){
+        List<ManagerResDto> list=managerService.getAllManagersByStatus(page,size,status);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(list);
+    }
+
+    @GetMapping("/get-one")
+    public ResponseEntity<ManagerDto> getOne(Principal principal){
+        ManagerDto managerDto=managerService.getOne(principal.getName());
+        return ResponseEntity
+                .ok()
+                .body(managerDto);
     }
 }

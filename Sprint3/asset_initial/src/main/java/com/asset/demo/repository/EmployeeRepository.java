@@ -1,5 +1,6 @@
 package com.asset.demo.repository;
 
+import com.asset.demo.enums.AccountStatus;
 import com.asset.demo.enums.UserStatus;
 import com.asset.demo.model.Employee;
 import com.asset.demo.model.User;
@@ -14,9 +15,10 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 
     @Query("""
        select e from Employee e
-       where e.status=?1
+       where (?1 is null or e.user.accountStatus=?1) and
+       (?2 is null or e.status=?2)
 """)
-    Page<Employee> getEmployeeByStatus(UserStatus status,Pageable pageable);
+    Page<Employee> getEmployeeByStatus(AccountStatus accountStatus,UserStatus status, Pageable pageable);
 
     @Query("""
       select e from Employee e
@@ -31,4 +33,10 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
      where e.user.username=?1
 """)
     Employee getEmployeeByUsername(String username);
+
+    @Query("""
+       select e from Employee e
+       where e.user.username=?1
+""")
+    Employee findByUsername(String name);
 }

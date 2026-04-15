@@ -1,6 +1,7 @@
 package com.asset.demo.config;
 
 import com.asset.demo.exceptions.ResourceNotFoundException;
+import com.asset.demo.exceptions.UserNotActivatedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,6 +83,31 @@ public class GlobalExceptionHandler {
         map.put(message,e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(map);
+
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntimeException(
+            RuntimeException e
+    ){
+        Map<String,Object>map=new HashMap<>();
+
+        map.put(message,e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(map);
+
+    }
+    @ExceptionHandler(UserNotActivatedException.class)
+    public ResponseEntity<?> handleUserNotActivatedException(
+            UserNotActivatedException e
+    ){
+        Map<String,Object>map=new HashMap<>();
+
+        map.put(message,e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.LOCKED)
                 .body(map);
 
     }

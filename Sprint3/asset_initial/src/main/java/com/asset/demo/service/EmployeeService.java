@@ -1,5 +1,6 @@
 package com.asset.demo.service;
 
+import com.asset.demo.dto.EmployeeDto;
 import com.asset.demo.dto.EmployeeFilterDto;
 import com.asset.demo.dto.EmployeeReqDto;
 import com.asset.demo.dto.EmployeeResDto;
@@ -57,11 +58,12 @@ public class EmployeeService {
     }
 
     public List<EmployeeResDto> filterEmployees(EmployeeFilterDto employeeFilterDto, int page, int size) {
-        UserStatus status=employeeFilterDto.status()==null?null:UserStatus.valueOf(employeeFilterDto.status());
-        if(status==null)
+        AccountStatus accountStatus=employeeFilterDto.userStatus()==null || employeeFilterDto.userStatus().isBlank()?null:AccountStatus.valueOf(employeeFilterDto.userStatus());
+        UserStatus userStatus =employeeFilterDto.employeeStatus()==null || employeeFilterDto.employeeStatus().isBlank()?null:UserStatus.valueOf(employeeFilterDto.employeeStatus());
+        if(accountStatus==null && userStatus==null)
             return List.of();
         Pageable pageable=PageRequest.of(page,size);
-        Page<Employee>list=employeeRepository.getEmployeeByStatus(status,pageable);
+        Page<Employee>list=employeeRepository.getEmployeeByStatus(accountStatus,userStatus,pageable);
         return list
                 .toList()
                 .stream()
@@ -91,5 +93,14 @@ public class EmployeeService {
 
     public Employee getEmployeeByUsername(String username) {
         return employeeRepository.getEmployeeByUsername(username);
+    }
+
+    public long getCount() {
+        return employeeRepository.count();
+    }
+
+    public EmployeeDto getOne(String name) {
+        Employee employee=employeeRepository.findByUsername(name);
+        return EmployeeMapper.mapToDtoV2(employee);
     }
 }

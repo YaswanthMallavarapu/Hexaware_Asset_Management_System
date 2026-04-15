@@ -1,11 +1,11 @@
 package com.asset.demo.service;
 
+import com.asset.demo.dto.ManagerDto;
 import com.asset.demo.dto.ManagerReqDto;
 import com.asset.demo.dto.ManagerResDto;
 import com.asset.demo.enums.AccountStatus;
 import com.asset.demo.enums.Role;
 import com.asset.demo.exceptions.ResourceNotFoundException;
-import com.asset.demo.mapper.EmployeeMapper;
 import com.asset.demo.mapper.ManagerMapper;
 import com.asset.demo.model.Employee;
 import com.asset.demo.model.Manager;
@@ -80,5 +80,25 @@ private final EmployeeService employeeService;
 
     public Manager getManagerByUsername(String username) {
         return managerRepository.getManagerByUsername(username);
+    }
+
+    public long getCount() {
+        return managerRepository.count();
+    }
+
+    public List<ManagerResDto> getAllManagersByStatus(int page, int size, String status) {
+        Pageable pageable= PageRequest.of(page,size);
+        AccountStatus managerStatus=AccountStatus.valueOf(status);
+        Page<Manager> pageManager=managerRepository.getAllByStatus(pageable,managerStatus);
+        return pageManager
+                .toList()
+                .stream()
+                .map(ManagerMapper::mapToDto)
+                .toList();
+    }
+
+    public ManagerDto getOne(String name) {
+        Manager manager=managerRepository.findByUsernameV2(name);
+        return ManagerMapper.mapToDtoV2(manager);
     }
 }

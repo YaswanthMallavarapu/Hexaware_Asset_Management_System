@@ -58,4 +58,8 @@ public class AssetAuditService {
                 .map(AssetAuditResultMapper::mapToDto)
                 .toList();
     }
+
+    public long getCount() {
+        return assetAuditRepository.count();
+    }
 }

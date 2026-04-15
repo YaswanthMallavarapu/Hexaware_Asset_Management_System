@@ -21,6 +21,7 @@ import java.util.List;
 @RequestMapping("/api/asset-audit")
 @RestController
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173/")
 public class AssetAuditController {
     private final AssetAuditService assetAuditService;
     /* Access : ADMIN */
@@ -69,6 +70,13 @@ public class AssetAuditController {
                 .body(audits);
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Long> getAdminsCount(){
+        long count=assetAuditService.getCount();
+        return ResponseEntity
+                .ok()
+                .body(count);
+    }
 
 
 

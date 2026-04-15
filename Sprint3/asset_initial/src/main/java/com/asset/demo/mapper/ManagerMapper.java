@@ -1,5 +1,6 @@
 package com.asset.demo.mapper;
 
+import com.asset.demo.dto.ManagerDto;
 import com.asset.demo.dto.ManagerReqDto;
 import com.asset.demo.dto.ManagerResDto;
 import com.asset.demo.model.Employee;
@@ -18,7 +19,16 @@ public class ManagerMapper {
         return new ManagerResDto(
                 manager.getId(),
                 manager.getFirstName()+" "+manager.getLastName(),
-                manager.getUser().getId()
+                manager.getUser().getId(),
+                manager.getUser().getAccountStatus()
+        );
+    }
+
+    public static ManagerDto mapToDtoV2(Manager manager) {
+        return new ManagerDto(
+                manager.getId(),
+                manager.getFirstName()+" "+manager.getLastName(),
+                manager.getUser().getUsername()
         );
     }
 }

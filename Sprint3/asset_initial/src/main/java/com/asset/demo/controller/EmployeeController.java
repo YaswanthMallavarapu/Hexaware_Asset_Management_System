@@ -1,5 +1,6 @@
 package com.asset.demo.controller;
 
+import com.asset.demo.dto.EmployeeDto;
 import com.asset.demo.dto.EmployeeFilterDto;
 import com.asset.demo.dto.EmployeeReqDto;
 import com.asset.demo.dto.EmployeeResDto;
@@ -10,11 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/employee")
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173/")
 public class EmployeeController {
 
     private EmployeeService employeeService;
@@ -68,4 +71,19 @@ public class EmployeeController {
     }
 
 
+    @GetMapping("/count")
+    public ResponseEntity<Long> getAdminsCount(){
+        long count=employeeService.getCount();
+        return ResponseEntity
+                .ok()
+                .body(count);
+    }
+
+    @GetMapping("/get-one")
+    public ResponseEntity<EmployeeDto> getOne(Principal principal){
+        EmployeeDto employeeDto=employeeService.getOne(principal.getName());
+        return ResponseEntity
+                .ok()
+                .body(employeeDto);
+    }
 }

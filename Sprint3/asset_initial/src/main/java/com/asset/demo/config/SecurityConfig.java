@@ -52,10 +52,12 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST,"/api/employee/add")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.GET,"/api/employee/get-all")
-                                .hasAnyAuthority("ADMIN")
+                                .hasAnyAuthority("MANAGER")
                                 .requestMatchers(HttpMethod.GET,"/api/employee/get/{employeeId}")
                                 .hasAnyAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.POST,"/api/employee/filter")
+                                .hasAnyAuthority("MANAGER")
+                                .requestMatchers(HttpMethod.POST,"/api/admin/get-all")
                                 .hasAnyAuthority("ADMIN")
 
                                 .requestMatchers(HttpMethod.POST,"/api/manager/add")
@@ -66,14 +68,18 @@ public class SecurityConfig {
                                 .hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.PUT,"/api/manager/approve-employee/{employeeId}")
                                 .hasAuthority("MANAGER")
+                                .requestMatchers(HttpMethod.PUT,"/api/manager/get-all/status/{status}")
+                                .hasAuthority("ADMIN")
 
-                                .requestMatchers(HttpMethod.POST,"/api/admin/add")
+                                .requestMatchers(HttpMethod.GET,"/api/admin/add")
                                 .hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.PUT,"/api/admin/approve-manager/{managerId}")
                                 .hasAuthority("ADMIN")
 
 
                                 .requestMatchers(HttpMethod.POST,"/api/asset-category/add")
+                                .hasAnyAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.GET,"/api/admin/get-one")
                                 .hasAnyAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.GET,"/api/asset-category/get-all")
                                 .hasAnyAuthority("ADMIN","EMPLOYEE")
@@ -101,11 +107,11 @@ public class SecurityConfig {
                                 .hasAnyAuthority("MANAGER")
 
 
-                                .requestMatchers(HttpMethod.POST,"/api/asset-allocation/allocate/{assetRequestId}")
+                                .requestMatchers(HttpMethod.PUT,"/api/asset-allocation/allocate/{assetRequestId}")
                                 .hasAnyAuthority("MANAGER")
-                                .requestMatchers(HttpMethod.POST,"/api/asset-allocation/reject/{assetRequestId}")
+                                .requestMatchers(HttpMethod.PUT,"/api/asset-allocation/reject/{assetRequestId}")
                                 .hasAnyAuthority("MANAGER")
-                                .requestMatchers(HttpMethod.POST,"/api/asset-allocation/return-asset-request/{assetAllocationId}")
+                                .requestMatchers(HttpMethod.PUT,"/api/asset-allocation/return-asset-request/{assetAllocationId}")
                                 .hasAnyAuthority("EMPLOYEE")
                                 .requestMatchers(HttpMethod.GET,"/api/asset-allocation/get-all/allocated")
                                 .hasAnyAuthority("EMPLOYEE")

@@ -128,4 +128,8 @@ public class AssetAllocationService {
                 .map(AssetAllocationMapper::mapToDto)
                 .toList();
     }
+
+    public long getCount() {
+        return assetAllocationRepository.count();
+    }
 }

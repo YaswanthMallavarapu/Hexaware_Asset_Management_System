@@ -16,6 +16,7 @@ import java.util.List;
 @RequestMapping("/api/service-request")
 @RestController
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173/")
 public class ServiceRequestController {
 
     private final ServiceRequestService serviceRequestService;
@@ -77,5 +78,13 @@ public class ServiceRequestController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(list);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getAdminsCount(){
+        long count=serviceRequestService.getCount();
+        return ResponseEntity
+                .ok()
+                .body(count);
     }
 }

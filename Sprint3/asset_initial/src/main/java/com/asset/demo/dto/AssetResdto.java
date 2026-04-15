@@ -1,5 +1,7 @@
 package com.asset.demo.dto;
 
+import com.asset.demo.enums.AssetStatus;
+
 import java.time.LocalDate;
 
 public record AssetResDto(
@@ -13,7 +15,8 @@ public record AssetResDto(
 
         LocalDate manufacturedDate,
 
-        long categoryId
+        long categoryId,
+        AssetStatus assetStatus
 
 
 ) {

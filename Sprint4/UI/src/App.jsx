@@ -1,9 +1,6 @@
-import Managers from "./components/admin-managers"
-import AdminDashboard from "./components/adminDashboard"
-import Assets from "./components/asset"
-import AssetCategories from "./components/assetCategories"
-import Navbar from "./components/navbar"
-import Sidebar from "./components/sidebar"
+
+import Login from "./components/auth/login"
+
 
 
 
@@ -12,12 +9,14 @@ function App() {
 
   return (
     <>
-    <Navbar/>
+    {/* <Navbar/>
      <Sidebar/>
      <Managers/>
      <AdminDashboard/>
      <AssetCategories/>
-     <Assets/>
+     <Assets/> */}
+     
+     <Login/>
     </>
   )
 }

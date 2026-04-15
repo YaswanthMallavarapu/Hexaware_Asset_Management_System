@@ -1,5 +1,6 @@
 package com.asset.demo.mapper;
 
+import com.asset.demo.dto.EmployeeDto;
 import com.asset.demo.dto.EmployeeReqDto;
 import com.asset.demo.dto.EmployeeResDto;
 import com.asset.demo.enums.AccountStatus;
@@ -29,7 +30,16 @@ public class EmployeeMapper {
                 employee.getContactNumber(),
                 employee.getDesignation(),
                 employee.getStatus(),
-                employee.getUser().getId()
+                employee.getUser().getId(),
+                employee.getUser().getAccountStatus()
+        );
+    }
+
+    public static EmployeeDto mapToDtoV2(Employee employee) {
+        return new EmployeeDto(
+                employee.getId(),
+                employee.getFirstName()+" "+employee.getLastName(),
+                employee.getUser().getUsername()
         );
     }
 }
