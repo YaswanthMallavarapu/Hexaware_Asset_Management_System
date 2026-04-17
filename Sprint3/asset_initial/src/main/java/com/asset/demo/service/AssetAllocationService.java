@@ -132,4 +132,14 @@ public class AssetAllocationService {
     public long getCount() {
         return assetAllocationRepository.count();
     }
+
+    public List<AssetAllocationResDto> getAllAllocations(int page, int size) {
+        Pageable pageable=PageRequest.of(page, size);
+        Page<AssetAllocation>pageAllocations=assetAllocationRepository.findAll(pageable);
+        return pageAllocations
+                .toList()
+                .stream()
+                .map(AssetAllocationMapper::mapToDto)
+                .toList();
+    }
 }

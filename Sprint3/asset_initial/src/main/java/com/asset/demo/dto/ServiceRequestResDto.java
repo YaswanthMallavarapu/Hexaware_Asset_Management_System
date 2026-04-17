@@ -9,6 +9,7 @@ public record ServiceRequestResDto(
         long id,
         long assetId,
         String assetName,
+        String description,
         long employeeId,
         String employeeName,
         long managerId,

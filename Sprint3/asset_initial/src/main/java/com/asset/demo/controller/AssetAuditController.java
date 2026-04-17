@@ -3,6 +3,7 @@ package com.asset.demo.controller;
 import com.asset.demo.dto.AssetAllocationAuditResDto;
 import com.asset.demo.dto.AssetAuditReqDto;
 import com.asset.demo.dto.AssetAuditResultResDto;
+import com.asset.demo.dto.AuditDateDto;
 import com.asset.demo.model.Asset;
 import com.asset.demo.model.AssetAllocation;
 import com.asset.demo.model.AssetAuditResult;
@@ -50,9 +51,9 @@ public class AssetAuditController {
     }
 
     @GetMapping("/get-all-audit-dates")
-    public ResponseEntity<List<Instant>> getAllAssetAuditDates(
+    public ResponseEntity<List<AuditDateDto>> getAllAssetAuditDates(
     ){
-       List<Instant>auditDates=assetAuditService.getAllAuditDates();
+       List<AuditDateDto>auditDates=assetAuditService.getAllAuditDates();
        return ResponseEntity
                .status(HttpStatus.OK)
                .body(auditDates);

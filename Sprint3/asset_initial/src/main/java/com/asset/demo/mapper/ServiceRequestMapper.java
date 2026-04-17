@@ -9,6 +9,7 @@ public class ServiceRequestMapper {
                 serviceRequest.getId(),
                 serviceRequest.getAsset().getId(),
                 serviceRequest.getAsset().getAssetName(),
+                serviceRequest.getDescription(),
                 serviceRequest.getEmployee().getId(),
                 serviceRequest.getEmployee().getFirstName()+" "+serviceRequest.getEmployee().getLastName(),
                 serviceRequest.getManager().getId(),

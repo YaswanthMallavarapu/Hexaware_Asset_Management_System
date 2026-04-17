@@ -2,6 +2,7 @@ package com.asset.demo.service;
 
 import com.asset.demo.dto.AssetAuditReqDto;
 import com.asset.demo.dto.AssetAuditResultResDto;
+import com.asset.demo.dto.AuditDateDto;
 import com.asset.demo.exceptions.ResourceNotFoundException;
 import com.asset.demo.mapper.AssetAuditResultMapper;
 import com.asset.demo.model.*;
@@ -45,7 +46,7 @@ public class AssetAuditService {
         assetAuditResultService.saveAll(list,audit);
     }
 
-    public List<Instant> getAllAuditDates() {
+    public List<AuditDateDto> getAllAuditDates() {
         return assetAuditRepository.getAllAuditDates();
     }
 

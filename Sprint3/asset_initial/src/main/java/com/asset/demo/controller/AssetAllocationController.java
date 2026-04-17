@@ -18,6 +18,24 @@ import java.util.List;
 public class AssetAllocationController {
     private final AssetAllocationService assetAllocationService;
 
+
+
+
+
+    @GetMapping("/get-all")
+    public ResponseEntity<?> getAllAllocations(
+            @RequestParam(value = "page",required = false,defaultValue = "0")int page,
+            @RequestParam(value = "size",required = false,defaultValue = "5")int size
+
+    ){
+
+        List<AssetAllocationResDto> list=assetAllocationService.getAllAllocations(page,size);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(list);
+
+    }
+
     /* Access : ADMIN */
     @PutMapping("/allocate/{assetRequestId}")
     public ResponseEntity<?> allocateAsset(Principal principal,
@@ -83,7 +101,7 @@ public class AssetAllocationController {
 
     }
 
-    /* Access : EMPLOYEE */
+
     @GetMapping("/get/status/{status}")
     public ResponseEntity<List<AssetAllocationResDto>> getAllByStatus(
             @RequestParam(value = "page",required = false,defaultValue = "0")int page,

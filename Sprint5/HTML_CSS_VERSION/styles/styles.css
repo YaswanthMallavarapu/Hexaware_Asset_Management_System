@@ -1,0 +1,41 @@
+h1{
+    color: blue;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar{
+    text-align:start;
+}
+.sidebar-item{
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.card{
+    text-align: center;
+    padding: 1rem;
+}
+.widget-title{
+    text-align: left;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.widget-number{
+    text-align: left;
+    color: green;
+    font-size: xx-large;
+    font-weight: bolder;
+}
+.asset-request{
+    color: yellowgreen;
+}
+.service-request{
+    color: red;
+}
+.audit{
+    color: orangered;
+}
+.matter{
+    text-align: left;
+    font-size: medium;
+    font-weight: bold;
+}

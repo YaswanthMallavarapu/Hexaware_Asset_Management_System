@@ -8,13 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-
+import com.asset.demo.dto.AuditDateDto;
 public interface AssetAuditRepository extends JpaRepository<AssetAudit,Long> {
 
     @Query("""
-    select a.auditDate from AssetAudit a
+    select new com.asset.demo.dto.AuditDateDto(a.id,a.manager.id,a.auditDate) from AssetAudit a
 """)
-    List<Instant> getAllAuditDates();
+    List<AuditDateDto> getAllAuditDates();
 
 
 }

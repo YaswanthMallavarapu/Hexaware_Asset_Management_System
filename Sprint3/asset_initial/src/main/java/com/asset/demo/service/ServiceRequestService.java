@@ -2,6 +2,7 @@ package com.asset.demo.service;
 
 import com.asset.demo.dto.ServiceRequestReqDto;
 import com.asset.demo.dto.ServiceRequestResDto;
+import com.asset.demo.dto.ServiceRequestResponseDto;
 import com.asset.demo.enums.AllocationStatus;
 import com.asset.demo.enums.AssetStatus;
 import com.asset.demo.enums.ServiceStatus;
@@ -109,5 +110,32 @@ public class ServiceRequestService {
 
     public long getCount() {
         return adminRepository.count();
+    }
+
+    public ServiceRequestResponseDto getAll(int page,int size) {
+        Pageable pageable=PageRequest.of(page,size);
+        Page<ServiceRequest>pageRequest=serviceRequestRepository.findAll(pageable);
+        List<ServiceRequestResDto>list=pageRequest
+                .toList()
+                .stream()
+                .map(ServiceRequestMapper::mapToDto)
+                .toList();
+        return new ServiceRequestResponseDto(
+                list,
+                pageRequest.getTotalPages(),
+                pageRequest.getTotalElements()
+        );
+    }
+
+    public ServiceRequestResponseDto getAllByStatus(int page, int size, String status) {
+
+        ServiceStatus serviceStatus=ServiceStatus.valueOf(status);
+        Pageable pageable=PageRequest.of(page,size);
+        Page<ServiceRequest>list=serviceRequestRepository.getByStatus(serviceStatus,pageable);
+        List<ServiceRequestResDto>requests=list.toList()
+                .stream()
+                .map(ServiceRequestMapper::mapToDto)
+                .toList();
+        return new ServiceRequestResponseDto(requests,list.getTotalPages(), list.getTotalElements());
     }
 }

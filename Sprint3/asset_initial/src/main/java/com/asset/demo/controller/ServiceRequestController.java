@@ -2,6 +2,7 @@ package com.asset.demo.controller;
 
 import com.asset.demo.dto.ServiceRequestReqDto;
 import com.asset.demo.dto.ServiceRequestResDto;
+import com.asset.demo.dto.ServiceRequestResponseDto;
 import com.asset.demo.model.ServiceRequest;
 import com.asset.demo.service.ServiceRequestService;
 import lombok.AllArgsConstructor;
@@ -78,6 +79,27 @@ public class ServiceRequestController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(list);
+    }
+
+    @GetMapping("/get-all")
+    public ResponseEntity<ServiceRequestResponseDto> getAllServiceRequest(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
+                                                                           @RequestParam(value = "size",required = false,defaultValue = "5")int size
+                                                                           ){
+        ServiceRequestResponseDto serviceRequestResponseDto=serviceRequestService.getAll(page,size);
+        return ResponseEntity
+                .ok()
+                .body(serviceRequestResponseDto);
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<ServiceRequestResponseDto> getByStatus(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
+                                                                 @RequestParam(value = "size",required = false,defaultValue = "5")int size,
+                                                                 @PathVariable String status
+    ){
+        ServiceRequestResponseDto serviceRequestResponseDto=serviceRequestService.getAllByStatus(page,size,status);
+        return ResponseEntity
+                .ok()
+                .body(serviceRequestResponseDto);
     }
 
     @GetMapping("/count")

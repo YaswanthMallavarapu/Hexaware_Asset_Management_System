@@ -1,5 +1,6 @@
 package com.asset.demo.repository;
 
+import com.asset.demo.enums.ServiceStatus;
 import com.asset.demo.model.ServiceRequest;
 import org.springframework.data.domain.ManagedTypes;
 import org.springframework.data.domain.Page;
@@ -15,4 +16,12 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest,L
       where sr.employee.user.username=?1
 """)
     Page<ServiceRequest> getServiceRequestByUser(String name, Pageable pageable);
+
+
+
+    @Query("""
+    select sr from ServiceRequest sr
+    where sr.status=?1
+""")
+    Page<ServiceRequest> getByStatus(ServiceStatus serviceStatus, Pageable pageable);
 }
