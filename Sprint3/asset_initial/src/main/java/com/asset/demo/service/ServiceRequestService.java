@@ -10,6 +10,7 @@ import com.asset.demo.exceptions.ResourceNotFoundException;
 import com.asset.demo.mapper.ServiceRequestMapper;
 import com.asset.demo.model.*;
 import com.asset.demo.repository.AdminRepository;
+import com.asset.demo.repository.AssetAllocationRepository;
 import com.asset.demo.repository.ServiceRequestRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ public class ServiceRequestService {
     private final EmployeeService employeeService;
     private final ManagerService managerService;
     private final AdminRepository adminRepository;
+    private final AssetAllocationRepository assetAllocationRepository;
 
     public void requestService(ServiceRequestReqDto serviceRequestReqDto, String username,long assetAllocationId) {
         //check for employee
@@ -137,5 +139,9 @@ public class ServiceRequestService {
                 .map(ServiceRequestMapper::mapToDto)
                 .toList();
         return new ServiceRequestResponseDto(requests,list.getTotalPages(), list.getTotalElements());
+    }
+
+    public long getCountByUser(String name) {
+        return serviceRequestRepository.getCountByUser(name);
     }
 }

@@ -1,5 +1,6 @@
 package com.asset.demo.controller;
 
+import com.asset.demo.dto.AssetRequestPageResDto;
 import com.asset.demo.dto.AssetRequestReqDto;
 import com.asset.demo.dto.AssetRequestResDto;
 import com.asset.demo.model.AssetRequest;
@@ -43,13 +44,13 @@ public class AssetRequestController {
 
     /* Access : EMPLOYEE  */
     @GetMapping("/get/user")
-    public ResponseEntity<?> getAssetRequestByUser(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
-                                                                          @RequestParam(value = "size",required = false,defaultValue = "5")int size,
-                                                                          Principal principal){
-        List<AssetRequestResDto>list=assetRequestService.getRequestByUser(principal.getName(),page,size);
+    public ResponseEntity<AssetRequestPageResDto> getAssetRequestByUser(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
+                                                                        @RequestParam(value = "size",required = false,defaultValue = "5")int size,
+                                                                        Principal principal){
+        AssetRequestPageResDto assetRequestPageResDto =assetRequestService.getRequestByUser(principal.getName(),page,size);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(list);
+                .body(assetRequestPageResDto);
 
     }
 
@@ -70,6 +71,35 @@ public class AssetRequestController {
         return ResponseEntity
                 .ok()
                 .body(count);
+    }
+
+    @GetMapping("/count-by-user")
+    public ResponseEntity<Long> getRequestByUser(Principal principal){
+        long count=assetRequestService.getCountByUser(principal.getName());
+        return ResponseEntity
+                .ok()
+                .body(count);
+    }
+
+    @DeleteMapping("/delete/{assetRequestId}")
+    public void deleteAssetRequest(Principal principal,
+                                   @PathVariable long assetRequestId){
+        assetRequestService.deleteAssetRequest(assetRequestId);
+        ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
+
+    }
+
+    @GetMapping("/get/user/status/{status}")
+    public ResponseEntity<AssetRequestPageResDto> getAssetRequestByUserStatus(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
+                                                              @RequestParam(value = "size",required = false,defaultValue = "5")int size,
+                                                              @PathVariable String status,
+                                                              Principal principal){
+        AssetRequestPageResDto list=assetRequestService.getRequestByUserStatus(status,page,size,principal.getName());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(list);
+
     }
 
 }

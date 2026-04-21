@@ -1,5 +1,7 @@
 package com.asset.demo.service;
 
+import com.asset.demo.dto.AssetByStatusResDto;
+import com.asset.demo.dto.AssetPageResDto;
 import com.asset.demo.dto.AssetReqDto;
 import com.asset.demo.dto.AssetResDto;
 import com.asset.demo.enums.AssetStatus;
@@ -41,14 +43,17 @@ public class AssetService {
 
     }
 
-    public List<AssetResDto> getAllAssets(int page, int size) {
+    public AssetPageResDto getAllAssets(int page, int size) {
         Pageable pageable=PageRequest.of(page,size);
         Page<Asset> list=assetRepository.findAll(pageable);
-        return list
+        List<AssetResDto> resList=list
                 .toList()
                 .stream()
                 .map(AssetMapper::mapToDto)
                 .toList();
+        return new AssetPageResDto(resList,
+                list.getTotalElements(),
+                list.getTotalPages());
     }
 
     public AssetResDto getAssetById(long assetId) {
@@ -74,15 +79,18 @@ public class AssetService {
     }
 
 
-    public List<AssetResDto> getAssetByStatus(int page, int size, String status) {
+    public AssetByStatusResDto getAssetByStatus(int page, int size, String status) {
         AssetStatus assetStatus=AssetStatus.valueOf(status);
         Pageable pageable=PageRequest.of(page,size);
         Page<Asset>pageAsset=assetRepository.getByStatus(assetStatus,pageable);
-        return pageAsset
+        List<AssetResDto>list= pageAsset
                 .toList()
                 .stream()
                 .map(AssetMapper::mapToDto)
                 .toList();
+        return new AssetByStatusResDto(list,
+                pageAsset.getTotalPages(),
+                pageAsset.getTotalElements());
     }
 
     public long getCount() {

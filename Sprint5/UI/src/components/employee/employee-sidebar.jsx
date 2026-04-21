@@ -7,7 +7,8 @@ import {
   FaUserTie,
   FaTags,
   FaBoxOpen,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaUsers
 } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -57,7 +58,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           </NavLink>
         </li>
 
-        
+
 
         <li className="nav-item mb-2">
           <NavLink to="/employee/asset-request" className="nav-link text-dark d-flex align-items-center">
@@ -80,16 +81,30 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           </NavLink>
         </li>
 
-        
 
-        
 
-        
+
+
+
 
       </ul>
 
       {/* Logout */}
       <div className="mt-auto p-3">
+
+        <ul className="nav nav-pills flex-column px-2">
+
+          <li className="nav-item mb-2" >
+            <NavLink
+              to="/employee/profile"
+              className="nav-link text-dark d-flex align-items-center"
+            >
+              <FaUsers />
+              {isOpen && <span className="ms-3">Profile</span>}
+            </NavLink>
+          </li>
+
+        </ul>
         <button
           onClick={handleLogout}
           className="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center"

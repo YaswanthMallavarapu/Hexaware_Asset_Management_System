@@ -1,8 +1,10 @@
 package com.asset.demo.service;
 
 import com.asset.demo.dto.AssetAuditReqDto;
+import com.asset.demo.dto.AssetAuditResStatusdto;
 import com.asset.demo.dto.AssetAuditResultResDto;
 import com.asset.demo.dto.AuditDateDto;
+import com.asset.demo.enums.AuditStatus;
 import com.asset.demo.exceptions.ResourceNotFoundException;
 import com.asset.demo.mapper.AssetAuditResultMapper;
 import com.asset.demo.model.*;
@@ -62,5 +64,24 @@ public class AssetAuditService {
 
     public long getCount() {
         return assetAuditRepository.count();
+    }
+
+    public AssetAuditResStatusdto getAllAssetByStatus(int page, int size, long id,String status) {
+        Pageable pageable=PageRequest.of(page,size);
+        AuditStatus auditStatus=AuditStatus.valueOf(status);
+        Page<AssetAuditResult>pageResult=assetAuditResultRepository.getAllByAuditIdAndStatus(id,auditStatus,pageable);
+
+        List<AssetAuditResultResDto>list=pageResult
+                .toList()
+                .stream()
+                .map(AssetAuditResultMapper::mapToDto)
+                .toList();
+        return new AssetAuditResStatusdto(
+                list,
+                pageResult.getTotalElements(),
+                pageResult.getTotalPages()
+        );
+
+
     }
 }

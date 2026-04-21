@@ -1,0 +1,117 @@
+.employee-assets-wrapper {
+  background-color: #f0f4f8;
+  min-height: 100vh;
+}
+
+/* Card */
+.asset-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+
+/* Table */
+.table thead {
+  background-color: #f8fafc;
+}
+
+.table th {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  padding: 14px 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+}
+
+.table tbody tr:hover {
+  background-color: #f8fafc;
+  transition: 0.15s;
+}
+
+/* Filter Buttons */
+.filter-btn {
+  border: 1px solid #e2e8f0;
+  background: white;
+  padding: 6px 14px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #475569;
+}
+
+.active-filter {
+  background-color: #0891b2;
+  color: white;
+  border: none;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-available {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+.status-allocated {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.status-in_service {
+  background-color: #fef9c3;
+  color: #ca8a04;
+}
+
+.status-retired {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+.status-approved {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+/* Request Button */
+.request-btn {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Pagination */
+.pagination-btn {
+  border: 1px solid #e2e8f0;
+  background: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.pagination-btn:disabled {
+  background: #f8fafc;
+  color: #cbd5e1;
+  cursor: not-allowed;
+}

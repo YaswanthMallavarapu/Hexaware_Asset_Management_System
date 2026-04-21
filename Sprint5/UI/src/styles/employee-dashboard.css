@@ -1,0 +1,61 @@
+.emp-dashboard-container {
+  background-color: #f0f4f8;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.emp-link {
+  text-decoration: none;
+}
+
+.emp-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.emp-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.emp-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  border: 1.5px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.emp-count {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.1;
+}
+
+.emp-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+.emp-progress-bg {
+  margin-top: 16px;
+  height: 4px;
+  border-radius: 999px;
+}
+
+.emp-progress-fill {
+  height: 100%;
+  width: 60%;
+  border-radius: 999px;
+}

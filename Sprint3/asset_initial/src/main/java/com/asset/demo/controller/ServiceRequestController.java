@@ -109,4 +109,11 @@ public class ServiceRequestController {
                 .ok()
                 .body(count);
     }
+    @GetMapping("/count-by-user")
+    public ResponseEntity<Long> getByUser(Principal principal){
+        long count=serviceRequestService.getCountByUser(principal.getName());
+        return ResponseEntity
+                .ok()
+                .body(count);
+    }
 }

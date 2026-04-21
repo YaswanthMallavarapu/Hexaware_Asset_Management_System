@@ -1,5 +1,6 @@
 package com.asset.demo.service;
 
+import com.asset.demo.dto.AssetAllocationPageResDto;
 import com.asset.demo.dto.AssetAllocationResDto;
 import com.asset.demo.enums.AllocationStatus;
 import com.asset.demo.enums.AssetStatus;
@@ -141,5 +142,24 @@ public class AssetAllocationService {
                 .stream()
                 .map(AssetAllocationMapper::mapToDto)
                 .toList();
+    }
+
+    public long getCountByUser(String name) {
+        return assetAllocationRepository.getCountByUser(name);
+    }
+
+    public AssetAllocationPageResDto getAllByUserStatus(String status, int page, int size, String name) {
+        Pageable pageable=PageRequest.of(page,size);
+        AllocationStatus allocationStatus=AllocationStatus.valueOf(status);
+        Page<AssetAllocation>pageAllocations=assetAllocationRepository.findByUserStatus(name,allocationStatus,pageable);
+
+        List<AssetAllocationResDto>list=pageAllocations
+                .toList()
+                .stream()
+                .map(AssetAllocationMapper::mapToDto)
+                .toList();
+        return new AssetAllocationPageResDto(list,
+                pageAllocations.getTotalElements(),
+                pageAllocations.getTotalPages());
     }
 }

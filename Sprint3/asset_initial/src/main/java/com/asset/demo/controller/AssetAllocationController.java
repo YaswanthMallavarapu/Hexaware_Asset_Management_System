@@ -1,5 +1,6 @@
 package com.asset.demo.controller;
 
+import com.asset.demo.dto.AssetAllocationPageResDto;
 import com.asset.demo.dto.AssetAllocationResDto;
 import com.asset.demo.model.AssetAllocation;
 import com.asset.demo.service.AssetAllocationService;
@@ -123,6 +124,29 @@ public class AssetAllocationController {
                 .ok()
                 .body(count);
     }
+    @GetMapping("/count-by-user")
+    public ResponseEntity<Long> getAllocationsByUser(Principal principal){
+        long count=assetAllocationService.getCountByUser(principal.getName());
+        return ResponseEntity
+                .ok()
+                .body(count);
+    }
+
+    @GetMapping("/get/user/status/{status}")
+    public ResponseEntity<AssetAllocationPageResDto> getAllByUserStatus(
+            @RequestParam(value = "page",required = false,defaultValue = "0")int page,
+            @RequestParam(value = "size",required = false,defaultValue = "5")int size,
+            @PathVariable String status,
+            Principal principal
+    ){
+
+        AssetAllocationPageResDto assetAllocationPageResDto =assetAllocationService.getAllByUserStatus(status,page,size,principal.getName());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(assetAllocationPageResDto);
+
+    }
+
 
 
 }

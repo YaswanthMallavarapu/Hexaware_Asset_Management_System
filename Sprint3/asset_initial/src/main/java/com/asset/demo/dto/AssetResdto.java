@@ -16,6 +16,7 @@ public record AssetResDto(
         LocalDate manufacturedDate,
 
         long categoryId,
+        String categoryName,
         AssetStatus assetStatus
 
 

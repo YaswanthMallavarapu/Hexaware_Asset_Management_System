@@ -24,4 +24,10 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest,L
     where sr.status=?1
 """)
     Page<ServiceRequest> getByStatus(ServiceStatus serviceStatus, Pageable pageable);
+
+    @Query("""
+    select count(sr) from ServiceRequest sr
+    where sr.employee.user.username=?1
+""")
+    long getCountByUser(String name);
 }

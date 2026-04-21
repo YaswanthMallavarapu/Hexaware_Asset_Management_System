@@ -1,8 +1,11 @@
 package com.asset.demo.service;
 
+import com.asset.demo.dto.AssetByStatusResDto;
+import com.asset.demo.dto.AssetRequestPageResDto;
 import com.asset.demo.dto.AssetRequestReqDto;
 import com.asset.demo.dto.AssetRequestResDto;
 import com.asset.demo.enums.RequestStatus;
+import com.asset.demo.exceptions.DuplicateRequestException;
 import com.asset.demo.exceptions.ResourceNotFoundException;
 import com.asset.demo.mapper.AssetRequestMapper;
 import com.asset.demo.model.Asset;
@@ -29,6 +32,18 @@ public class AssetRequestService {
     public void requestAsset(AssetRequestReqDto assetRequestReqdto, long assetId, String username) {
         //check for employeeId
         Employee employee=employeeService.getEmployeeByUsername(username);
+
+        //check for duplicate request
+        List<AssetRequest>requests=assetRequestRepository.findAllByUser(username);
+        requests.forEach(request->{
+                  if(request.getAsset().getId()==assetId&&request.getStatus().equals(RequestStatus.PENDING))
+                  {
+                      throw new DuplicateRequestException("You have already requested this asset.");
+                  }
+                }
+
+        );
+
         //check for assetId
         Asset asset=assetService.getAssetByGivenId(assetId);
         //map assetRequestDto to entity
@@ -59,16 +74,21 @@ public class AssetRequestService {
         assetRequestRepository.save(assetRequest);
     }
 
-    public List<AssetRequestResDto> getRequestByUser(String name, int page, int size) {
+    public AssetRequestPageResDto getRequestByUser(String name, int page, int size) {
 
         Pageable pageable=PageRequest.of(page,size);
 
         Page<AssetRequest>pageAssetRequest=assetRequestRepository.getByUsername(name,pageable);
-        return pageAssetRequest
+        List<AssetRequestResDto>list= pageAssetRequest
                 .toList()
                 .stream()
                 .map(AssetRequestMapper::mapToDto)
                 .toList();
+        return new AssetRequestPageResDto(
+                list,
+                pageAssetRequest.getTotalElements(),
+                pageAssetRequest.getTotalPages()
+        );
     }
 
     public List<AssetRequestResDto> getRequestByStatus(String status, int page, int size) {
@@ -85,5 +105,33 @@ public class AssetRequestService {
 
     public long getCount() {
         return assetRequestRepository.count();
+    }
+
+    public long getCountByUser(String name) {
+        return assetRequestRepository.getCountByUser(name);
+    }
+
+    public void deleteAssetRequest(long assetRequestId) {
+        AssetRequest assetRequest=assetRequestRepository.findById(assetRequestId)
+                        .orElseThrow(()->new ResourceNotFoundException("Invalid id."));
+        if(!assetRequest.getStatus().equals(RequestStatus.PENDING))
+            throw new ResourceNotFoundException("You cannot cancel approved request.");
+        assetRequestRepository.deleteById(assetRequestId);
+    }
+
+    public AssetRequestPageResDto getRequestByUserStatus(String status, int page, int size, String name) {
+        Pageable pageable=PageRequest.of(page,size);
+
+        RequestStatus requestStatus=RequestStatus.valueOf(status);
+        Page<AssetRequest>pageAssetRequest=assetRequestRepository.getByUserStatus(requestStatus,name,pageable);
+        List<AssetRequestResDto>list= pageAssetRequest
+                .toList()
+                .stream()
+                .map(AssetRequestMapper::mapToDto)
+                .toList();
+        return new AssetRequestPageResDto(list,
+                pageAssetRequest.getTotalElements(),
+                pageAssetRequest.getTotalPages());
+
     }
 }

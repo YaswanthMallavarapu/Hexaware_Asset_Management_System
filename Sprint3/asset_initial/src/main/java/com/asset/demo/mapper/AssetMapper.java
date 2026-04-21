@@ -22,6 +22,7 @@ public class AssetMapper {
                 asset.getAssetModel(),
                 asset.getManufacturingDate(),
                 asset.getCategory().getId(),
+                asset.getCategory().getCategoryName(),
                 asset.getStatus()
         );
     }

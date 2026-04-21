@@ -1,5 +1,6 @@
 package com.asset.demo.config;
 
+import com.asset.demo.exceptions.DuplicateRequestException;
 import com.asset.demo.exceptions.ResourceNotFoundException;
 import com.asset.demo.exceptions.UserNotActivatedException;
 import lombok.extern.slf4j.Slf4j;
@@ -108,6 +109,18 @@ public class GlobalExceptionHandler {
         map.put(message,e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.LOCKED)
+                .body(map);
+
+    }
+    @ExceptionHandler(DuplicateRequestException.class)
+    public ResponseEntity<?> handleDuplicateRequestException(
+            DuplicateRequestException e
+    ){
+        Map<String,Object>map=new HashMap<>();
+
+        map.put(message,e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
                 .body(map);
 
     }

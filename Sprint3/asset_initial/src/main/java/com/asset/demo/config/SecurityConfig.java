@@ -109,6 +109,8 @@ public class SecurityConfig {
                                 .hasAnyAuthority("EMPLOYEE")
                                 .requestMatchers(HttpMethod.GET,"/api/asset-request/get/status/{status}")
                                 .hasAnyAuthority("MANAGER")
+                                .requestMatchers(HttpMethod.DELETE,"/api/asset-request/delete/{assetRequestId}")
+                                .hasAnyAuthority("EMPLOYEE")
 
 
                                 .requestMatchers(HttpMethod.PUT,"/api/asset-allocation/allocate/{assetRequestId}")

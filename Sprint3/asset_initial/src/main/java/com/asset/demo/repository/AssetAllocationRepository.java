@@ -28,4 +28,19 @@ public interface AssetAllocationRepository extends JpaRepository<AssetAllocation
     where aa.status=?1
 """)
     Page<AssetAllocation> getAllByStatus(AllocationStatus status1, Pageable pageable);
+
+    @Query("""
+    select count(*) from AssetAllocation aa
+    where aa.employee.user.username=?1
+""")
+    long getCountByUser(String name);
+
+
+    @Query("""
+    select ar from AssetAllocation ar
+    where ar.employee.user.username=?1
+    and ar.status=?2
+
+""")
+    Page<AssetAllocation> findByUserStatus(String name, AllocationStatus allocationStatus, Pageable pageable);
 }

@@ -1,9 +1,6 @@
 package com.asset.demo.controller;
 
-import com.asset.demo.dto.AssetAllocationAuditResDto;
-import com.asset.demo.dto.AssetAuditReqDto;
-import com.asset.demo.dto.AssetAuditResultResDto;
-import com.asset.demo.dto.AuditDateDto;
+import com.asset.demo.dto.*;
 import com.asset.demo.model.Asset;
 import com.asset.demo.model.AssetAllocation;
 import com.asset.demo.model.AssetAuditResult;
@@ -78,6 +75,24 @@ public class AssetAuditController {
                 .ok()
                 .body(count);
     }
+
+    @GetMapping("/status/{assetAuditId}")
+    public ResponseEntity<AssetAuditResStatusdto> getByStatus(
+            @RequestParam(value = "page",required = false,defaultValue = "0")int page,
+            @RequestParam(value = "size",required = false,defaultValue = "5")int size,
+            @PathVariable long assetAuditId,
+            @RequestParam String status
+
+    ){
+        AssetAuditResStatusdto assetAuditResStatusdto =assetAuditService.getAllAssetByStatus(page,size,assetAuditId,status);
+        return ResponseEntity
+                .ok()
+                .body(assetAuditResStatusdto);
+    }
+
+
+
+
 
 
 

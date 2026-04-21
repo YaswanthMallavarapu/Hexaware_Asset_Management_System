@@ -1,5 +1,7 @@
 package com.asset.demo.controller;
 
+import com.asset.demo.dto.AssetByStatusResDto;
+import com.asset.demo.dto.AssetPageResDto;
 import com.asset.demo.dto.AssetReqDto;
 import com.asset.demo.dto.AssetResDto;
 import com.asset.demo.service.AssetService;
@@ -30,9 +32,9 @@ public class AssetController {
     }
     /* Access : ADMIN , EMPLOYEE */
     @GetMapping("/get-all")
-    public ResponseEntity<?> getAllAssets(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
+    public ResponseEntity<AssetPageResDto> getAllAssets(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
                                           @RequestParam(value = "size",required = false,defaultValue = "5")int size){
-        List<AssetResDto> list=assetService.getAllAssets(page,size);
+        AssetPageResDto list=assetService.getAllAssets(page,size);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(list);
@@ -40,13 +42,13 @@ public class AssetController {
     }
 
     @GetMapping("/get/status/{status}")
-    public ResponseEntity<?> getAssetByUser(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
+    public ResponseEntity<AssetByStatusResDto> getAssetByUser(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
                                             @RequestParam(value = "size",required = false,defaultValue = "5")int size,
                                             @PathVariable String status){
-       List<AssetResDto>list=assetService.getAssetByStatus(page,size,status);
+       AssetByStatusResDto assetByStatusResDto=assetService.getAssetByStatus(page,size,status);
        return ResponseEntity
                .status(HttpStatus.OK)
-               .body(list);
+               .body(assetByStatusResDto);
     }
     /* Access : ADMIN , EMPLOYEE */
     @GetMapping("/get/{assetId}")

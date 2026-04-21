@@ -27,6 +27,8 @@ import EmployeeAssetAllocations from './components/employee/employee-asset-alloc
 import EmployeeAssetRequest from './components/employee/employee-asset-request.jsx'
 import EmployeeServiceRequest from './components/employee/employee-service-request.jsx'
 import ManagerProfile from './components/manager/manager-profile.jsx'
+import AuditResults from './components/manager/manager-audit-results.jsx'
+import EmployeeProfile from './components/employee/employee-profile.jsx'
 
 
 const routes=createBrowserRouter([
@@ -44,7 +46,7 @@ const routes=createBrowserRouter([
     element:<AdminLayout/>,
     children:[
       {
-        path:"dashboard",
+        index:true,
         element:<AdminDashboard/>
       },
       {
@@ -61,6 +63,10 @@ const routes=createBrowserRouter([
       },
       {
         path:"assets",
+        element:<AdminAssets/>
+      },
+      {
+        path:"dashboard",
         element:<AdminAssets/>
       },
 
@@ -109,6 +115,10 @@ const routes=createBrowserRouter([
         path:"profile",
         element:<ManagerProfile/>
       },
+      {
+        path:"audit-results/:auditId",
+        element:<AuditResults/>
+      },
 
 
     ]
@@ -118,7 +128,7 @@ const routes=createBrowserRouter([
     element:<EmployeeLayout/>,
     children:[
       {
-        path:"dashboard",
+        index:true,
         element:<EmployeeDashboard/>
       },
       {
@@ -136,7 +146,16 @@ const routes=createBrowserRouter([
       {
         path:"service-request",
         element:<EmployeeServiceRequest/>
-      }
+      },
+      {
+        path:"profile",
+        element:<EmployeeProfile/>
+      },
+      {
+        path:"dashboard",
+        element:<EmployeeDashboard/>
+      },
+
 
 
     ]

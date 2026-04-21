@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface AssetRequestRepository extends JpaRepository<AssetRequest,Long> {
 
     @Query("""
@@ -22,4 +24,24 @@ public interface AssetRequestRepository extends JpaRepository<AssetRequest,Long>
     where ar.status=?1
 """)
     Page<AssetRequest> getByStatus(RequestStatus requestStatus, Pageable pageable);
+
+
+    @Query("""
+    select count(ar) from AssetRequest ar
+    where ar.employee.user.username=?1
+""")
+    long getCountByUser(String name);
+
+    @Query("""
+    select ar from AssetRequest ar
+    where ar.employee.user.username=?1
+""")
+    List<AssetRequest> findAllByUser(String username);
+
+    @Query("""
+    select ar from AssetRequest ar
+    where ar.employee.user.username=?2
+    and ar.status=?1
+""")
+    Page<AssetRequest> getByUserStatus(RequestStatus requestStatus, String name, Pageable pageable);
 }
