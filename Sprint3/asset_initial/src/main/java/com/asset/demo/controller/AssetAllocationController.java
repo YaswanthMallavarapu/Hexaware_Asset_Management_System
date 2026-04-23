@@ -71,18 +71,30 @@ public class AssetAllocationController {
                 .build();
     }
 
+    @PutMapping("/cancel-return-asset-request/{assetAllocationId}")
+    public ResponseEntity<?> cancelReturnRequest(
+            @PathVariable long assetAllocationId,
+            Principal principal
+    ){
+
+        assetAllocationService.cancelReturnAsset(principal.getName(),assetAllocationId);
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .build();
+    }
+
     /* Access : EMPLOYEE */
     @GetMapping("/get-all/allocated")
-    public ResponseEntity<?> getAllAllocatedAsset(
+    public ResponseEntity<AssetAllocationPageResDto> getAllAllocatedAsset(
             @RequestParam(value = "page",required = false,defaultValue = "0")int page,
             @RequestParam(value = "size",required = false,defaultValue = "5")int size,
             Principal principal
     ){
 
-        List<AssetAllocationResDto> list=assetAllocationService.getAllAllocatedByUser(principal.getName(),page,size);
+        AssetAllocationPageResDto assetAllocationPageResDto =assetAllocationService.getAllAllocatedByUser(principal.getName(),page,size);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(list);
+                .body(assetAllocationPageResDto);
 
     }
 

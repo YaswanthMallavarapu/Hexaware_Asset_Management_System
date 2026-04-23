@@ -1,5 +1,6 @@
 package com.asset.demo.controller;
 
+import com.asset.demo.dto.ServiceRequestPageResDto;
 import com.asset.demo.dto.ServiceRequestReqDto;
 import com.asset.demo.dto.ServiceRequestResDto;
 import com.asset.demo.dto.ServiceRequestResponseDto;
@@ -69,16 +70,16 @@ public class ServiceRequestController {
 
     /* Access : EMPLOYEE */
     @GetMapping("/user/get-all")
-    public ResponseEntity<?> getServiceRequestByUsername(
+    public ResponseEntity<ServiceRequestResponseDto> getServiceRequestByUsername(
             @RequestParam(value = "page",required = false,defaultValue = "0")int page,
             @RequestParam(value = "size",required = false,defaultValue = "5")int size,
             Principal principal
     ){
 
-        List<ServiceRequestResDto> list=serviceRequestService.getRequestByUsername(principal.getName(),page,size);
+        ServiceRequestResponseDto serviceRequestResponseDto =serviceRequestService.getRequestByUsername(principal.getName(),page,size);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(list);
+                .body(serviceRequestResponseDto);
     }
 
     @GetMapping("/get-all")
@@ -115,5 +116,26 @@ public class ServiceRequestController {
         return ResponseEntity
                 .ok()
                 .body(count);
+    }
+
+    @DeleteMapping("/delete/{serviceRequestId}")
+    public ResponseEntity<Object> deleteRequest(@PathVariable long serviceRequestId,
+                                                Principal principal){
+        serviceRequestService.deleteRequest(serviceRequestId,principal);
+        return ResponseEntity
+                .noContent()
+                .build();
+
+    }
+
+    @GetMapping("/user/status/{status}")
+    public ResponseEntity<ServiceRequestPageResDto> getByUserStatus(@RequestParam(value = "page",required = false,defaultValue = "0")int page,
+                                                  @RequestParam(value = "size",required = false,defaultValue = "5")int size,
+                                                  @PathVariable String status,
+                                                  Principal principal){
+        ServiceRequestPageResDto serviceRequestPageResDto=serviceRequestService.getByUserStatus(status,page,size,principal.getName());
+        return ResponseEntity
+                .ok()
+                .body(serviceRequestPageResDto);
     }
 }

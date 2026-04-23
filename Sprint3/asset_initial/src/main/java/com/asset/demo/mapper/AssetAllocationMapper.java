@@ -14,7 +14,7 @@ public class AssetAllocationMapper {
                 assetAllocation.getEmployee().getId(),
                 assetAllocation.getAsset().getAssetName(),
                 assetAllocation.getEmployee().getFirstName()+" "+assetAllocation.getEmployee().getLastName(),
-                assetAllocation.getManager().getId(),
+                assetAllocation.getManager().getFirstName()+assetAllocation.getManager().getLastName(),
                 assetAllocation.getAllocationDate(),
                 assetAllocation.getStatus()
 

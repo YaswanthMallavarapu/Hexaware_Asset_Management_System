@@ -12,7 +12,7 @@ public record ServiceRequestResDto(
         String description,
         long employeeId,
         String employeeName,
-        long managerId,
+        String managerName,
         Instant requestDate,
         ServiceStatus status
 ) {

@@ -92,14 +92,17 @@ public class AssetAllocationService {
 
     }
 
-    public List<AssetAllocationResDto> getAllAllocatedByUser(String name, int page, int size) {
+    public AssetAllocationPageResDto getAllAllocatedByUser(String name, int page, int size) {
         Pageable pageable= PageRequest.of(page,size);
         Page<AssetAllocation> pageAllocations=assetAllocationRepository.getByUsername(name,pageable);
-        return pageAllocations
+        List<AssetAllocationResDto>list= pageAllocations
                 .toList()
                 .stream()
                 .map(AssetAllocationMapper::mapToDto)
                 .toList();
+        return new AssetAllocationPageResDto(list,
+                pageAllocations.getTotalElements(),
+                pageAllocations.getTotalPages());
     }
 
     public List<AssetAllocation> getAllAllocatedAssets() {
@@ -161,5 +164,23 @@ public class AssetAllocationService {
         return new AssetAllocationPageResDto(list,
                 pageAllocations.getTotalElements(),
                 pageAllocations.getTotalPages());
+    }
+
+    public void cancelReturnAsset(String name, long assetAllocationId) {
+        Employee loggedUser=employeeService.getEmployeeByUsername(name);
+        //get assetAllocation
+        AssetAllocation assetAllocation=getAssetAllocationById(assetAllocationId);
+        Employee employee=assetAllocation.getEmployee();
+
+        //verify user
+        if(loggedUser!=employee){
+            throw new ResourceNotFoundException("You cannot post return request for asset you don't have");
+        }
+        if(assetAllocation.getStatus()!=AllocationStatus.RETURN_REQUESTED){
+            throw new ResourceNotFoundException("Invalid asset return request.");
+        }
+
+        assetAllocation.setStatus(AllocationStatus.ALLOCATED);
+        assetAllocationRepository.save(assetAllocation);
     }
 }

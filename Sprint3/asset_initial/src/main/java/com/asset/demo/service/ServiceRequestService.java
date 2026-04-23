@@ -1,5 +1,6 @@
 package com.asset.demo.service;
 
+import com.asset.demo.dto.ServiceRequestPageResDto;
 import com.asset.demo.dto.ServiceRequestReqDto;
 import com.asset.demo.dto.ServiceRequestResDto;
 import com.asset.demo.dto.ServiceRequestResponseDto;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.function.ServerRequest;
 
+import java.security.Principal;
 import java.util.List;
 
 @Service
@@ -49,6 +51,9 @@ public class ServiceRequestService {
             throw new ResourceNotFoundException("Invalid asset for request service.");
         }
 
+        assetAllocation.setStatus(AllocationStatus.SERVICE_REQUESTED);
+        assetAllocationRepository.save(assetAllocation);
+
         asset.setStatus(AssetStatus.IN_SERVICE);
         assetService.updateAsset(asset);
         //add details to service request
@@ -56,6 +61,7 @@ public class ServiceRequestService {
         serviceRequest.setEmployee(assetEmployee);
         serviceRequest.setAsset(asset);
         serviceRequest.setDescription(serviceRequestReqDto.description());
+        serviceRequest.setAssetAllocation(assetAllocation);
         //save assetRequest in DB
         serviceRequestRepository.save(serviceRequest);
     }
@@ -101,13 +107,16 @@ public class ServiceRequestService {
         serviceRequestRepository.save(serviceRequest);
     }
 
-    public List<ServiceRequestResDto> getRequestByUsername(String name, int page, int size) {
+    public ServiceRequestResponseDto getRequestByUsername(String name, int page, int size) {
         Pageable pageable= PageRequest.of(page,size);
         Page<ServiceRequest> pageServiceRequest=serviceRequestRepository.getServiceRequestByUser(name,pageable);
-        return pageServiceRequest.toList()
+        List<ServiceRequestResDto>list= pageServiceRequest.toList()
                 .stream()
                 .map(ServiceRequestMapper::mapToDto)
                 .toList();
+        return new ServiceRequestResponseDto(list,
+                pageServiceRequest.getTotalPages(),
+                pageServiceRequest.getTotalPages());
     }
 
     public long getCount() {
@@ -116,16 +125,16 @@ public class ServiceRequestService {
 
     public ServiceRequestResponseDto getAll(int page,int size) {
         Pageable pageable=PageRequest.of(page,size);
-        Page<ServiceRequest>pageRequest=serviceRequestRepository.findAll(pageable);
-        List<ServiceRequestResDto>list=pageRequest
+        Page<ServiceRequest>pageServices=serviceRequestRepository.findAll(pageable);
+        List<ServiceRequestResDto>list=pageServices
                 .toList()
                 .stream()
                 .map(ServiceRequestMapper::mapToDto)
                 .toList();
         return new ServiceRequestResponseDto(
                 list,
-                pageRequest.getTotalPages(),
-                pageRequest.getTotalElements()
+                pageServices.getTotalPages(),
+                pageServices.getTotalElements()
         );
     }
 
@@ -143,5 +152,33 @@ public class ServiceRequestService {
 
     public long getCountByUser(String name) {
         return serviceRequestRepository.getCountByUser(name);
+    }
+
+    public void deleteRequest(long serviceRequestId, Principal principal) {
+
+        ServiceRequest serviceRequest=serviceRequestRepository.findById(serviceRequestId)
+                .orElseThrow(()->new ResourceNotFoundException("Invalid service request ID."));
+        Employee employee=serviceRequest.getEmployee();
+        if(!employee.getUser().getUsername().equals(principal.getName())){
+            throw new ResourceNotFoundException("You cannot delete this request");
+        }
+        AssetAllocation assetAllocation=serviceRequest.getAssetAllocation();
+        assetAllocation.setStatus(AllocationStatus.ALLOCATED);
+        assetAllocationRepository.save(assetAllocation);
+        serviceRequestRepository.deleteById(serviceRequestId);
+    }
+
+    public ServiceRequestPageResDto getByUserStatus(String status, int page, int size, String name) {
+        ServiceStatus serviceStatus=ServiceStatus.valueOf(status);
+        Pageable pageable=PageRequest.of(page,size);
+        Page<ServiceRequest>pageServices=serviceRequestRepository.getAllByUserStatus(serviceStatus,name,pageable);
+        List<ServiceRequestResDto>list=pageServices
+                .toList()
+                .stream()
+                .map(ServiceRequestMapper::mapToDto)
+                .toList();
+        return new ServiceRequestPageResDto(list,
+                pageServices.getTotalElements(),
+                pageServices.getTotalPages());
     }
 }

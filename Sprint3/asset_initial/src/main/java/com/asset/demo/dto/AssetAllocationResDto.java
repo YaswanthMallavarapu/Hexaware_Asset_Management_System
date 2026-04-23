@@ -10,7 +10,7 @@ public record AssetAllocationResDto(
         long employeeId,
         String assetName,
         String employeeName,
-        long managerId,
+        String managerName,
         LocalDate allocatedDate,
         AllocationStatus status
 ) {

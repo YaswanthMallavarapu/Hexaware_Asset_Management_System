@@ -12,7 +12,7 @@ public class ServiceRequestMapper {
                 serviceRequest.getDescription(),
                 serviceRequest.getEmployee().getId(),
                 serviceRequest.getEmployee().getFirstName()+" "+serviceRequest.getEmployee().getLastName(),
-                serviceRequest.getManager().getId(),
+                serviceRequest.getManager()==null?"Not Assigned":serviceRequest.getManager().getFirstName()+" "+serviceRequest.getManager().getLastName(),
                 serviceRequest.getRequestDate(),
                 serviceRequest.getStatus()
         );

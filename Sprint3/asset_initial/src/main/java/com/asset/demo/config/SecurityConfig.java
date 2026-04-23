@@ -127,6 +127,10 @@ public class SecurityConfig {
                                 .hasAnyAuthority("MANAGER")
                                 .requestMatchers(HttpMethod.GET,"/api/asset-allocation/get/status/{status}")
                                 .hasAnyAuthority("MANAGER")
+                                .requestMatchers(HttpMethod.GET,"/api/asset-allocation/get/user/status/{status}")
+                                .hasAnyAuthority("EMPLOYEE")
+                                .requestMatchers(HttpMethod.PUT,"/api/asset-allocation/cancel-return-asset-request/{assetAllocationId}")
+                                .hasAnyAuthority("EMPLOYEE")
 
                                 .requestMatchers(HttpMethod.POST,"/api/service-request/request-service/{assetAllocationId}")
                                 .hasAnyAuthority("EMPLOYEE")
@@ -142,6 +146,11 @@ public class SecurityConfig {
                                 .hasAnyAuthority("MANAGER")
                                 .requestMatchers(HttpMethod.GET,"/api/service-request/status/{status}")
                                 .hasAnyAuthority("MANAGER")
+                                .requestMatchers(HttpMethod.DELETE,"/api/service-request/delete/{serviceRequestId}")
+                                .hasAnyAuthority("EMPLOYEE")
+                                .requestMatchers(HttpMethod.GET,"/api/service-request/user/status/{status}")
+                                .hasAnyAuthority("EMPLOYEE")
+
 
                                 .requestMatchers(HttpMethod.POST,"/api/asset-audit/audit/{assetAuditResultId}")
                                 .hasAnyAuthority("MANAGER")

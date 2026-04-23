@@ -40,6 +40,10 @@ public class ServiceRequest {
     @JoinColumn(name = "manager_id")
     private Manager manager;
 
+    @OneToOne
+    @JoinColumn(name = "asset_allocation_id")
+    private AssetAllocation assetAllocation;
+
     // ---------------- DESCRIPTION ----------------
     @Size(max = 1000)
     @Column(columnDefinition = "TEXT")

@@ -29,6 +29,8 @@ import EmployeeServiceRequest from './components/employee/employee-service-reque
 import ManagerProfile from './components/manager/manager-profile.jsx'
 import AuditResults from './components/manager/manager-audit-results.jsx'
 import EmployeeProfile from './components/employee/employee-profile.jsx'
+import { Provider } from 'react-redux'
+import { store } from './store.js'
 
 
 const routes=createBrowserRouter([
@@ -165,9 +167,10 @@ const routes=createBrowserRouter([
 ])
 
 createRoot(document.getElementById('root')).render(
-  
+  <Provider store={store}>
   <RouterProvider router={routes}>
     <App />
     </RouterProvider>
+    </Provider>
   
 )
