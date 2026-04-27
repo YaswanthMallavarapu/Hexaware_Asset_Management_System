@@ -31,146 +31,168 @@ import AuditResults from './components/manager/manager-audit-results.jsx'
 import EmployeeProfile from './components/employee/employee-profile.jsx'
 import { Provider } from 'react-redux'
 import { store } from './store.js'
+import Adminprofile from './components/admin/admin-profile.jsx'
+import SignUp from './components/auth/sign-up.jsx'
+import ManagerSignUp from './components/manager/manager-signup.jsx'
+import EmployeeSignUp from './components/employee/employee-signup.jsx'
 
 
-const routes=createBrowserRouter([
+const routes = createBrowserRouter([
   {
 
-    path:"",
-    element:<App/>
+    path: "",
+    element: <App />
   },
   {
-    path:"/login",
-    element:<Login/>
+    path: "/login",
+    element: <Login />
   },
   {
-    path:"/admin",
-    element:<AdminLayout/>,
-    children:[
+    path: '/sign-up',
+    element: <SignUp />
+  },
+  {
+    path: '/employee/signup',
+    element: <EmployeeSignUp />
+  },
+  {
+    path: '/manager/signup',
+    element: <ManagerSignUp />
+  },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
       {
-        index:true,
-        element:<AdminDashboard/>
+        index: true,
+        element: <AdminDashboard />
       },
       {
-        path:"admins",
-        element:<AdminAdmins/>
+        path: "admins",
+        element: <AdminAdmins />
       },
       {
-        path:"managers",
-        element:<AdminManagers/>
+        path: "managers",
+        element: <AdminManagers />
       },
       {
-        path:"categories",
-        element:<AdminCategories/>
+        path: "categories",
+        element: <AdminCategories />
       },
       {
-        path:"assets",
-        element:<AdminAssets/>
+        path: "assets",
+        element: <AdminAssets />
+      },
+
+      {
+        path: 'dashboard',
+        element: <AdminDashboard />
       },
       {
-        path:"dashboard",
-        element:<AdminAssets/>
+        path: 'profile',
+        element: <Adminprofile />
       },
 
 
     ]
   },
   {
-    path:"/manager",
-    element:<ManagerLayout/>,
-    children:[
+    path: "/manager",
+    element: <ManagerLayout />,
+    children: [
 
       {
-        index:true,
-        element:<ManagerDashboard/>
+        index: true,
+        element: <ManagerDashboard />
       },
       {
-        path:"employees",
-        element:<ManagerEmployee/>
+        path: "employees",
+        element: <ManagerEmployee />
       },
       {
-        path:"categories",
-        element:<ManagerCategories/>
+        path: "categories",
+        element: <ManagerCategories />
       },
       {
-        path:"assets",
-        element:<ManagerAssets/>
+        path: "assets",
+        element: <ManagerAssets />
       },
       {
-        path:"asset-request",
-        element:<ManagerAssetRequest/>
-      },{
-        path:"asset-allocations",
-        element:<ManagerAssetAllocations/>
-      },{
-        path:"service-request",
-        element:<ManagerServiceRequest/>
-      },{
-        path:"audit",
-        element:<ManagerAudit/>
+        path: "asset-request",
+        element: <ManagerAssetRequest />
+      }, {
+        path: "asset-allocations",
+        element: <ManagerAssetAllocations />
+      }, {
+        path: "service-request",
+        element: <ManagerServiceRequest />
+      }, {
+        path: "audit",
+        element: <ManagerAudit />
       },
       {
-        path:"dashboard",
-        element:<ManagerDashboard/>
+        path: "dashboard",
+        element: <ManagerDashboard />
       },
       {
-        path:"profile",
-        element:<ManagerProfile/>
+        path: "profile",
+        element: <ManagerProfile />
       },
       {
-        path:"audit-results/:auditId",
-        element:<AuditResults/>
-      },
-
-
-    ]
-  }
-  ,{
-    path:"/employee",
-    element:<EmployeeLayout/>,
-    children:[
-      {
-        index:true,
-        element:<EmployeeDashboard/>
-      },
-      {
-        path:"assets",
-        element:<EmployeeAssets/>
-      },
-      {
-        path:"asset-allocation",
-        element:<EmployeeAssetAllocations/>
-      },
-      {
-        path:"asset-request",
-        element:<EmployeeAssetRequest/>
-      },
-      {
-        path:"service-request",
-        element:<EmployeeServiceRequest/>
-      },
-      {
-        path:"profile",
-        element:<EmployeeProfile/>
-      },
-      {
-        path:"dashboard",
-        element:<EmployeeDashboard/>
+        path: "audit-results/:auditId",
+        element: <AuditResults />
       },
 
 
 
     ]
   }
-  
+  , {
+    path: "/employee",
+    element: <EmployeeLayout />,
+    children: [
+      {
+        index: true,
+        element: <EmployeeDashboard />
+      },
+      {
+        path: "assets",
+        element: <EmployeeAssets />
+      },
+      {
+        path: "asset-allocation",
+        element: <EmployeeAssetAllocations />
+      },
+      {
+        path: "asset-request",
+        element: <EmployeeAssetRequest />
+      },
+      {
+        path: "service-request",
+        element: <EmployeeServiceRequest />
+      },
+      {
+        path: "profile",
+        element: <EmployeeProfile />
+      },
+      {
+        path: "dashboard",
+        element: <EmployeeDashboard />
+      },
+
+
+
+    ]
+  }
+
 
 ])
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-  <RouterProvider router={routes}>
-    <App />
+    <RouterProvider router={routes}>
+      <App />
     </RouterProvider>
-    </Provider>
-  
+  </Provider>
+
 )

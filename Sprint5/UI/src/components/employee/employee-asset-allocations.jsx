@@ -107,7 +107,7 @@ const EmployeeAssetAllocations = () => {
                     <td>{formatDate(allocation.allocatedDate)}</td>
                     <td>
                       <span
-                        className={`status-badge status-${allocation.status.toLowerCase()}`}
+                        className={`status-badge status-${allocation.status?.toLowerCase()}`}
                       >
                         {allocation.status}
                       </span>

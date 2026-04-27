@@ -11,6 +11,7 @@ const AdminManagers = () => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState('');
   const [approvingId, setApprovingId] = useState(null);
+  const [filters,setFilters]=useState([])
 
   const config = {
     headers: {
@@ -59,6 +60,16 @@ const AdminManagers = () => {
     }
   };
 
+  const getAllAccountStatus=async()=>{
+    try {
+      const response=await axios.get("http://localhost:8082/api/auth/account-status",config)
+      setFilters(response.data);
+
+    } catch (error) {
+      handleError(error.message);
+    }
+  }
+
   useEffect(() => {
     if (filter === 'ALL') {
       fetchAllManagers(page);
@@ -67,6 +78,7 @@ const AdminManagers = () => {
     } else if (filter === 'PENDING') {
       fetchManagersByStatus(page, 'PENDING');
     }
+    getAllAccountStatus()
   }, [page, filter]);
 
   const handleFilterChange = (newFilter) => {
@@ -92,11 +104,11 @@ const AdminManagers = () => {
   const handleNext = () => { if (hasMore) setPage(prev => prev + 1); };
   const handlePrev = () => { if (page > 0) setPage(prev => prev - 1); };
 
-  const filterButtons = [
-    { label: 'All', value: 'ALL' },
-    { label: 'Approved', value: 'APPROVED' },
-    { label: 'Pending', value: 'PENDING' },
-  ];
+  // const filterButtons = [
+  //   { label: 'All', value: 'ALL' },
+  //   { label: 'Approved', value: 'APPROVED' },
+  //   { label: 'Pending', value: 'PENDING' },
+  // ];
 
   return (
     <div className="container-fluid py-4 px-4" style={{ backgroundColor: "#f0f4f8", minHeight: "100vh" }}>
@@ -111,7 +123,7 @@ const AdminManagers = () => {
         {/* Filter Buttons */}
         <div className="d-flex align-items-center gap-2">
           <BsFunnel size={16} className="text-muted" />
-          {filterButtons.map(btn => (
+          {filters.map(btn => (
             <button
               key={btn.value}
               onClick={() => handleFilterChange(btn.value)}
@@ -122,12 +134,12 @@ const AdminManagers = () => {
                 fontSize: "0.83rem",
                 fontWeight: 500,
                 cursor: "pointer",
-                backgroundColor: filter === btn.value ? "#2563eb" : "#fff",
+                backgroundColor: filter === btn.value.toUpperCase() ? "#2563eb" : "#fff",
                 color: filter === btn.value ? "#fff" : "#475569",
                 transition: "all 0.15s",
               }}
             >
-              {btn.label}
+              {btn.name}
             </button>
           ))}
         </div>
