@@ -2,6 +2,9 @@ package com.asset.demo.controller;
 
 import com.asset.demo.dto.AssetAllocationPageResDto;
 import com.asset.demo.dto.AssetAllocationResDto;
+import com.asset.demo.dto.FilterResDto;
+import com.asset.demo.enums.AllocationStatus;
+import com.asset.demo.enums.UserStatus;
 import com.asset.demo.model.AssetAllocation;
 import com.asset.demo.service.AssetAllocationService;
 import lombok.AllArgsConstructor;
@@ -10,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.util.StringUtils.capitalize;
 
 @RestController
 @RequestMapping("/api/asset-allocation")
@@ -24,7 +30,7 @@ public class AssetAllocationController {
 
 
     @GetMapping("/get-all")
-    public ResponseEntity<?> getAllAllocations(
+    public ResponseEntity<List<AssetAllocationResDto>> getAllAllocations(
             @RequestParam(value = "page",required = false,defaultValue = "0")int page,
             @RequestParam(value = "size",required = false,defaultValue = "5")int size
 
@@ -39,7 +45,7 @@ public class AssetAllocationController {
 
     /* Access : ADMIN */
     @PutMapping("/allocate/{assetRequestId}")
-    public ResponseEntity<?> allocateAsset(Principal principal,
+    public ResponseEntity<Object> allocateAsset(Principal principal,
                                            @PathVariable long assetRequestId){
         assetAllocationService.allocateAsset(principal.getName(),assetRequestId);
         return ResponseEntity
@@ -50,7 +56,7 @@ public class AssetAllocationController {
 
     /* Access : ADMIN */
     @PutMapping("/reject/{assetRequestId}")
-    public ResponseEntity<?> rejectRequest(@PathVariable long assetRequestId){
+    public ResponseEntity<Object> rejectRequest(@PathVariable long assetRequestId){
         assetAllocationService.rejectAsset(assetRequestId);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -60,7 +66,7 @@ public class AssetAllocationController {
 
     /* Access : EMPLOYEE */
     @PutMapping("/return-asset-request/{assetAllocationId}")
-    public ResponseEntity<?> returnAsset(
+    public ResponseEntity<Object> returnAsset(
             @PathVariable long assetAllocationId,
             Principal principal
     ){
@@ -72,7 +78,7 @@ public class AssetAllocationController {
     }
 
     @PutMapping("/cancel-return-asset-request/{assetAllocationId}")
-    public ResponseEntity<?> cancelReturnRequest(
+    public ResponseEntity<Object> cancelReturnRequest(
             @PathVariable long assetAllocationId,
             Principal principal
     ){
@@ -100,7 +106,7 @@ public class AssetAllocationController {
 
     /* Access : EMPLOYEE */
     @PutMapping("/accept-return-request/{assetAllocationId}")
-    public ResponseEntity<?> acceptReturnRequest(
+    public ResponseEntity<Object> acceptReturnRequest(
             @RequestParam(value = "page",required = false,defaultValue = "0")int page,
             @RequestParam(value = "size",required = false,defaultValue = "5")int size,
             @PathVariable long assetAllocationId,
@@ -156,6 +162,20 @@ public class AssetAllocationController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(assetAllocationPageResDto);
+
+    }
+
+
+    @GetMapping("/allocation-status")
+    public ResponseEntity<List<FilterResDto>> getUserStatusV2(){
+        List<FilterResDto> list=new ArrayList<>();
+        list.add(new FilterResDto("ALL","ALL"));
+        for (AllocationStatus value : AllocationStatus.values()) {
+            list.add(new FilterResDto(value.toString(),value.toString()));
+        }
+        return  ResponseEntity
+                .ok()
+                .body(list);
 
     }
 

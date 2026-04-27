@@ -1,16 +1,15 @@
 package com.asset.demo.controller;
 
-import com.asset.demo.dto.EmployeeDto;
-import com.asset.demo.dto.EmployeeFilterDto;
-import com.asset.demo.dto.EmployeeReqDto;
-import com.asset.demo.dto.EmployeeResDto;
+import com.asset.demo.dto.*;
 import com.asset.demo.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -85,5 +84,29 @@ public class EmployeeController {
         return ResponseEntity
                 .ok()
                 .body(employeeDto);
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<EmployeeDocumentResDto> uploadProfile(
+            Principal principal,
+            @RequestParam MultipartFile file
+    ) throws IOException {
+
+        EmployeeDocumentResDto resDto =
+                employeeService.upload(principal.getName(), file);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(resDto);
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<String> getEmployeeProfile(Principal principal) {
+
+        String url = employeeService.getProfile(principal.getName());
+
+        return ResponseEntity
+                .ok()
+                .body(url);
     }
 }

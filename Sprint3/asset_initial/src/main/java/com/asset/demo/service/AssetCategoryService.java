@@ -1,55 +1,86 @@
 package com.asset.demo.service;
 
 import com.asset.demo.dto.AssetCategoryReqDto;
+import com.asset.demo.dto.CategoryIdDto;
 import com.asset.demo.exceptions.ResourceNotFoundException;
 import com.asset.demo.model.AssetCategory;
 import com.asset.demo.repository.AssetCategoryRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class AssetCategoryService {
+
     private final AssetCategoryRepository assetCategoryRepository;
 
-    public void addCategory(AssetCategoryReqDto assetCategoryReqDto) {
-        //map this to AssetCategory entity
-        //it can be done directly
-        AssetCategory assetCategory=new AssetCategory();
-        assetCategory.setCategoryName(assetCategoryReqDto.categoryName());
-        assetCategory.setDescription(assetCategoryReqDto.text());
-        assetCategory.setQuantity(0);
-        //when added both remaining and quantity wil be same
-        assetCategory.setRemaining(0);
-        //save in DB
-        assetCategoryRepository.save(assetCategory);
+    public void addCategory(AssetCategoryReqDto dto) {
 
+        log.atInfo().log("Adding new asset category: {}", dto.categoryName());
+
+        AssetCategory category = new AssetCategory();
+        category.setCategoryName(dto.categoryName());
+        category.setDescription(dto.text());
+        category.setQuantity(0);
+        category.setRemaining(0);
+
+        assetCategoryRepository.save(category);
+
+        log.atInfo().log("Category created successfully: {}", dto.categoryName());
     }
-
 
     public List<AssetCategory> getAllAssetCategory(int page, int size) {
-        Pageable pageable= PageRequest.of(page,size);
-        Page<AssetCategory> pageAssetCategory=assetCategoryRepository.findAll(pageable);
-        return pageAssetCategory
-                .toList();
-    }
 
+        log.atInfo().log("Fetching asset categories page={} size={}", page, size);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AssetCategory> pageData = assetCategoryRepository.findAll(pageable);
+
+        return pageData.getContent();
+    }
 
     public AssetCategory getAssetCategoryById(long categoryId) {
+
+        log.atInfo().log("Fetching category by ID {}", categoryId);
+
         return assetCategoryRepository.findById(categoryId)
-                .orElseThrow(()->new ResourceNotFoundException("Category with id not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Category with id not found."));
     }
 
-    public void updateAssetCategory(AssetCategory assetCategory) {
-        assetCategoryRepository.save(assetCategory);
+    public void updateAssetCategory(AssetCategory category) {
+
+        log.atInfo().log("Updating category ID {}", category.getId());
+
+        assetCategoryRepository.save(category);
     }
 
     public long getCount() {
-        return assetCategoryRepository.count();
+
+        long count = assetCategoryRepository.count();
+        log.atInfo().log("Total category count {}", count);
+
+        return count;
+    }
+
+    public List<CategoryIdDto> getAllWithId() {
+
+        log.atInfo().log("Fetching all categories with ID");
+
+        List<AssetCategory> list = assetCategoryRepository.findAll();
+        List<CategoryIdDto> result = new ArrayList<>();
+
+        list.forEach(c ->
+                result.add(new CategoryIdDto(c.getId(), c.getCategoryName()))
+        );
+
+        log.atInfo().log("Fetched {} categories", result.size());
+
+        return result;
     }
 }

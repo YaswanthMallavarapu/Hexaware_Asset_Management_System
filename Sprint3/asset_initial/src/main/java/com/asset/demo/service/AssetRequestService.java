@@ -134,4 +134,18 @@ public class AssetRequestService {
                 pageAssetRequest.getTotalPages());
 
     }
+
+    public void requestAssetV1(AssetRequestReqDto assetRequestReqdto, long assetId, long employeeId) {
+        //check for employeeId
+        Employee employee=employeeService.getEmployeeByGivenId(employeeId);
+        //check for assetId
+        Asset asset=assetService.getAssetByGivenId(assetId);
+        //map assetRequestDto to entity
+        AssetRequest assetRequest= AssetRequestMapper.mapToEntity(assetRequestReqdto);
+        //add employee and asset to assetRequest
+        assetRequest.setEmployee(employee);
+        assetRequest.setAsset(asset);
+        //save assetRequest
+        assetRequestRepository.save(assetRequest);
+    }
 }

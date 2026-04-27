@@ -1,6 +1,7 @@
 package com.asset.demo.controller;
 
 import com.asset.demo.dto.AssetCategoryReqDto;
+import com.asset.demo.dto.CategoryIdDto;
 import com.asset.demo.model.AssetCategory;
 import com.asset.demo.service.AssetCategoryService;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -20,7 +22,7 @@ public class AssetCategoryController {
 
     /* Access : ADMIN */
     @PostMapping("/add")
-    public ResponseEntity<?> addCategory(@Valid @RequestBody AssetCategoryReqDto assetCategoryReqDto){
+    public ResponseEntity<Object> addCategory(@Valid @RequestBody AssetCategoryReqDto assetCategoryReqDto){
 
         assetCategoryService.addCategory(assetCategoryReqDto);
         return ResponseEntity
@@ -56,6 +58,13 @@ public class AssetCategoryController {
                 .body(count);
     }
 
+    @GetMapping("/get-all-categories")
+    public ResponseEntity<List<CategoryIdDto>> getAllWithId(){
+        List<CategoryIdDto>list=assetCategoryService.getAllWithId();
+         return ResponseEntity
+                 .ok()
+                 .body(list);
+    }
 
 
 }

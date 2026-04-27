@@ -87,6 +87,10 @@
 			<version>0.13.0</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
 		<!-- Source: https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson -->
 		<dependency><!-- This is needed to parse JWT token -->
 			<groupId>io.jsonwebtoken</groupId>

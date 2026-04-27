@@ -1,41 +1,37 @@
 package com.asset.demo.service;
 
-import com.asset.demo.dto.UserReqDto;
-import com.asset.demo.dto.UserResDto;
-import com.asset.demo.enums.UserStatus;
-import com.asset.demo.exceptions.ResourceNotFoundException;
 import com.asset.demo.model.User;
-
 import com.asset.demo.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.lang.module.ResolutionException;
-import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.getUserByUsername(username);
+        log.atInfo().log("Loading user by username: {}", username);
+
+        UserDetails user = userRepository.getUserByUsername(username);
+
+        log.atInfo().log("User loaded: {}", username);
+        return user;
     }
 
-
     public User insertUser(User user) {
-        return userRepository.save(user);
+        log.atInfo().log("Inserting user: {}", user.getUsername());
+
+        User saved = userRepository.save(user);
+
+        log.atInfo().log("User inserted successfully: {}", saved.getUsername());
+        return saved;
     }
 }

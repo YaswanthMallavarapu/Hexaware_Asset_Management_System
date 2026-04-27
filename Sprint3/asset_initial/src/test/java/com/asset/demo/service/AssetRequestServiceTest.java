@@ -1,235 +1,267 @@
-//package com.asset.demo.service;
-//
-//import com.asset.demo.dto.AssetRequestReqDto;
-//import com.asset.demo.dto.AssetRequestResDto;
-//import com.asset.demo.enums.RequestStatus;
-//import com.asset.demo.exceptions.ResourceNotFoundException;
-//import com.asset.demo.model.Asset;
-//import com.asset.demo.model.AssetRequest;
-//import com.asset.demo.model.Employee;
-//import com.asset.demo.model.User;
-//import com.asset.demo.repository.AssetRequestRepository;
-//import org.junit.jupiter.api.Assertions;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.ArgumentCaptor;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.PageImpl;
-//import org.springframework.data.domain.PageRequest;
-//import org.springframework.data.domain.Pageable;
-//
-//import java.time.Instant;
-//import java.util.List;
-//import java.util.Optional;
-//
-//import static org.mockito.Mockito.*;
-//
-//@ExtendWith(MockitoExtension.class)
-//public class AssetRequestServiceTest {
-//
-//    @InjectMocks
-//    private AssetRequestService assetRequestService;
-//
-//    @Mock
-//    private AssetRequestRepository assetRequestRepository;
-//
-//    @Mock
-//    private AssetService assetService;
-//
-//    @Mock
-//    private EmployeeService employeeService;
-//
-//    @Test
-//    public void requestAssetTest(){
-//
-//        AssetRequestReqDto dto = new AssetRequestReqDto("Need for project");
-//
-//        User user = new User();
-//        user.setUsername("john123");
-//
-//        Employee employee = new Employee();
-//        employee.setId(1L);
-//        employee.setFirstName("John");
-//        employee.setLastName("Doe");
-//        employee.setUser(user);
-//
-//        Asset asset = new Asset();
-//        asset.setId(10L);
-//        asset.setAssetName("Laptop");
-//
-//        when(employeeService.getEmployeeByUsername("john123"))
-//                .thenReturn(employee);
-//
-//        when(assetService.getAssetByGivenId(10L))
-//                .thenReturn(asset);
-//
-//        assetRequestService.requestAsset(dto,10L,"john123");
-//
-//        ArgumentCaptor<AssetRequest> captor =
-//                ArgumentCaptor.forClass(AssetRequest.class);
-//
-//        verify(assetRequestRepository).save(captor.capture());
-//
-//        AssetRequest savedRequest = captor.getValue();
-//
-//        Assertions.assertEquals(employee,savedRequest.getEmployee());
-//        Assertions.assertEquals(asset,savedRequest.getAsset());
-//        Assertions.assertEquals("Need for project",
-//                savedRequest.getRemarks());
-//    }
-//
-//    @Test
-//    public void getAllAssetRequestsTest(){
-//
-//        Employee employee = new Employee();
-//        employee.setId(1L);
-//        employee.setFirstName("John");
-//        employee.setLastName("Doe");
-//
-//        Asset asset = new Asset();
-//        asset.setId(10L);
-//        asset.setAssetName("Laptop");
-//
-//        AssetRequest request = new AssetRequest();
-//        request.setId(100L);
-//        request.setEmployee(employee);
-//        request.setAsset(asset);
-//        request.setRequestDate(Instant.now());
-//        request.setStatus(RequestStatus.PENDING);
-//
-//        List<AssetRequest> list = List.of(request);
-//
-//        Page<AssetRequest> pageRequest =
-//                new PageImpl<>(list);
-//
-//        Pageable pageable = PageRequest.of(0,1);
-//
-//        when(assetRequestRepository.findAll(pageable))
-//                .thenReturn(pageRequest);
-//
-//        List<AssetRequestResDto> result =
-//                assetRequestService.getAllAssetRequests(0,1);
-//
-//        Assertions.assertEquals(1,result.size());
-//        Assertions.assertEquals(1L,result.get(0).employeeId());
-//        Assertions.assertEquals(10L,result.get(0).assetId());
-//    }
-//
-//    @Test
-//    public void getAssetRequestByIdTestWhenExist(){
-//
-//        AssetRequest request = new AssetRequest();
-//        request.setId(1L);
-//
-//        when(assetRequestRepository.findById(1L))
-//                .thenReturn(Optional.of(request));
-//
-//        Assertions.assertEquals(request,
-//                assetRequestService.getAssetRequestById(1L));
-//    }
-//
-//    @Test
-//    public void getAssetRequestByIdTestWhenNotExist(){
-//
-//        when(assetRequestRepository.findById(50L))
-//                .thenReturn(Optional.empty());
-//
-//        Exception e = Assertions.assertThrows(
-//                ResourceNotFoundException.class,
-//                ()->assetRequestService.getAssetRequestById(50L)
-//        );
-//
-//        Assertions.assertEquals("Invalid asset request id.",
-//                e.getMessage());
-//    }
-//
-//    @Test
-//    public void updateAssetRequestStatusTest(){
-//
-//        AssetRequest request = new AssetRequest();
-//        request.setId(1L);
-//
-//        assetRequestService.updateAssetRequestStatus(request);
-//
-//        verify(assetRequestRepository,times(1))
-//                .save(request);
-//    }
-//
-//    @Test
-//    public void getRequestByUserTest(){
-//
-//        Employee employee = new Employee();
-//        employee.setId(1L);
-//        employee.setFirstName("John");
-//        employee.setLastName("Doe");
-//
-//        Asset asset = new Asset();
-//        asset.setId(10L);
-//        asset.setAssetName("Laptop");
-//
-//        AssetRequest request = new AssetRequest();
-//        request.setId(100L);
-//        request.setEmployee(employee);
-//        request.setAsset(asset);
-//        request.setRequestDate(Instant.now());
-//        request.setStatus(RequestStatus.PENDING);
-//
-//        List<AssetRequest> list = List.of(request);
-//
-//        Page<AssetRequest> pageRequest =
-//                new PageImpl<>(list);
-//
-//        Pageable pageable = PageRequest.of(0,1);
-//
-//        when(assetRequestRepository.getByUsername("john123",pageable))
-//                .thenReturn(pageRequest);
-//
-//        List<AssetRequestResDto> result =
-//                assetRequestService.getRequestByUser("john123",0,1);
-//
-//        Assertions.assertEquals(1,result.size());
-//        Assertions.assertEquals(1L,result.get(0).employeeId());
-//    }
-//
-//    @Test
-//    public void getRequestByStatusTest(){
-//
-//        Employee employee = new Employee();
-//        employee.setId(1L);
-//        employee.setFirstName("John");
-//        employee.setLastName("Doe");
-//
-//        Asset asset = new Asset();
-//        asset.setId(10L);
-//        asset.setAssetName("Laptop");
-//
-//        AssetRequest request = new AssetRequest();
-//        request.setId(100L);
-//        request.setEmployee(employee);
-//        request.setAsset(asset);
-//        request.setRequestDate(Instant.now());
-//        request.setStatus(RequestStatus.PENDING);
-//
-//        List<AssetRequest> list = List.of(request);
-//
-//        Page<AssetRequest> pageRequest =
-//                new PageImpl<>(list);
-//
-//        Pageable pageable = PageRequest.of(0,1);
-//
-//        when(assetRequestRepository
-//                .getByStatus(RequestStatus.PENDING,pageable))
-//                .thenReturn(pageRequest);
-//
-//        List<AssetRequestResDto> result =
-//                assetRequestService.getRequestByStatus("PENDING",0,1);
-//
-//        Assertions.assertEquals(1,result.size());
-//        Assertions.assertEquals(RequestStatus.PENDING,
-//                result.get(0).status());
-//    }
-//
-//}
+package com.asset.demo.service;
+
+import com.asset.demo.dto.AssetRequestPageResDto;
+import com.asset.demo.dto.AssetRequestReqDto;
+import com.asset.demo.enums.RequestStatus;
+import com.asset.demo.exceptions.DuplicateRequestException;
+import com.asset.demo.exceptions.ResourceNotFoundException;
+import com.asset.demo.model.*;
+import com.asset.demo.repository.AssetRequestRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.springframework.data.domain.*;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
+class AssetRequestServiceTest {
+
+    @Mock private AssetRequestRepository assetRequestRepository;
+    @Mock private AssetService assetService;
+    @Mock private EmployeeService employeeService;
+
+    @InjectMocks
+    private AssetRequestService assetRequestService;
+
+    // =========================
+    // Helper (VERY IMPORTANT)
+    // =========================
+    private AssetRequest createMockRequest() {
+        AssetRequest request = new AssetRequest();
+        request.setId(1L);
+
+        Employee emp = new Employee();
+        emp.setId(1L);
+        emp.setFirstName("John");
+        emp.setLastName("Doe");
+
+        Asset asset = new Asset();
+        asset.setId(10L);
+        asset.setAssetName("Laptop");
+
+        request.setEmployee(emp);
+        request.setAsset(asset);
+        request.setStatus(RequestStatus.PENDING);
+
+        return request;
+    }
+
+    // =========================
+    // requestAsset()
+    // =========================
+
+    @Test
+    void requestAsset_success() {
+
+        Employee emp = new Employee();
+        emp.setId(1L);
+
+        Asset asset = new Asset();
+        asset.setId(10L);
+
+        when(employeeService.getEmployeeByUsername("user")).thenReturn(emp);
+        when(assetRequestRepository.findAllByUser("user")).thenReturn(List.of());
+        when(assetService.getAssetByGivenId(10L)).thenReturn(asset);
+
+        assetRequestService.requestAsset(new AssetRequestReqDto("Need"), 10L, "user");
+
+        verify(assetRequestRepository).save(any(AssetRequest.class));
+    }
+
+    @Test
+    void requestAsset_duplicate() {
+
+        Employee emp = new Employee();
+        emp.setId(1L);
+
+        Asset asset = new Asset();
+        asset.setId(10L);
+
+        AssetRequest existing = new AssetRequest();
+        existing.setAsset(asset);
+        existing.setStatus(RequestStatus.PENDING);
+
+        when(employeeService.getEmployeeByUsername("user")).thenReturn(emp);
+        when(assetRequestRepository.findAllByUser("user"))
+                .thenReturn(List.of(existing));
+
+        assertThrows(DuplicateRequestException.class,
+                () -> assetRequestService.requestAsset(
+                        new AssetRequestReqDto("dup"), 10L, "user"));
+    }
+
+    // =========================
+    // getAllAssetRequests()
+    // =========================
+
+    @Test
+    void getAllAssetRequests_success() {
+
+        Page<AssetRequest> page =
+                new PageImpl<>(List.of(createMockRequest()));
+
+        when(assetRequestRepository.findAll(any(Pageable.class)))
+                .thenReturn(page);
+
+        assertEquals(1,
+                assetRequestService.getAllAssetRequests(0, 5).size());
+    }
+
+    // =========================
+    // getAssetRequestById()
+    // =========================
+
+    @Test
+    void getById_success() {
+
+        AssetRequest req = createMockRequest();
+
+        when(assetRequestRepository.findById(1L))
+                .thenReturn(Optional.of(req));
+
+        assertEquals(1L,
+                assetRequestService.getAssetRequestById(1L).getId());
+    }
+
+    @Test
+    void getById_notFound() {
+
+        when(assetRequestRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> assetRequestService.getAssetRequestById(1L));
+    }
+
+    // =========================
+    // updateAssetRequestStatus()
+    // =========================
+
+    @Test
+    void updateStatus_success() {
+
+        AssetRequest req = createMockRequest();
+
+        assetRequestService.updateAssetRequestStatus(req);
+
+        verify(assetRequestRepository).save(req);
+    }
+
+    // =========================
+    // getRequestByUser()
+    // =========================
+
+    @Test
+    void getRequestByUser_success() {
+
+        Page<AssetRequest> page =
+                new PageImpl<>(List.of(createMockRequest()));
+
+        when(assetRequestRepository.getByUsername(eq("user"), any(Pageable.class)))
+                .thenReturn(page);
+
+        AssetRequestPageResDto result =
+                assetRequestService.getRequestByUser("user", 0, 5);
+
+        assertEquals(1, result.list().size());
+    }
+
+    // =========================
+    // getRequestByStatus()
+    // =========================
+
+    @Test
+    void getRequestByStatus_success() {
+
+        Page<AssetRequest> page =
+                new PageImpl<>(List.of(createMockRequest()));
+
+        when(assetRequestRepository.getByStatus(
+                eq(RequestStatus.PENDING), any(Pageable.class)))
+                .thenReturn(page);
+
+        assertEquals(1,
+                assetRequestService.getRequestByStatus("PENDING", 0, 5).size());
+    }
+
+    // =========================
+    // count()
+    // =========================
+
+    @Test
+    void getCount_success() {
+        when(assetRequestRepository.count()).thenReturn(3L);
+        assertEquals(3, assetRequestService.getCount());
+    }
+
+    @Test
+    void getCountByUser_success() {
+        when(assetRequestRepository.getCountByUser("user")).thenReturn(2L);
+        assertEquals(2, assetRequestService.getCountByUser("user"));
+    }
+
+    // =========================
+    // deleteAssetRequest()
+    // =========================
+
+    @Test
+    void delete_success() {
+
+        AssetRequest req = createMockRequest();
+
+        when(assetRequestRepository.findById(1L))
+                .thenReturn(Optional.of(req));
+
+        assetRequestService.deleteAssetRequest(1L);
+
+        verify(assetRequestRepository).deleteById(1L);
+    }
+
+    @Test
+    void delete_notFound() {
+
+        when(assetRequestRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> assetRequestService.deleteAssetRequest(1L));
+    }
+
+    @Test
+    void delete_notPending() {
+
+        AssetRequest req = createMockRequest();
+        req.setStatus(RequestStatus.APPROVED);
+
+        when(assetRequestRepository.findById(1L))
+                .thenReturn(Optional.of(req));
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> assetRequestService.deleteAssetRequest(1L));
+    }
+
+    // =========================
+    // getRequestByUserStatus()
+    // =========================
+
+    @Test
+    void getRequestByUserStatus_success() {
+
+        Page<AssetRequest> page =
+                new PageImpl<>(List.of(createMockRequest()));
+
+        when(assetRequestRepository.getByUserStatus(
+                eq(RequestStatus.PENDING), eq("user"), any(Pageable.class)))
+                .thenReturn(page);
+
+        AssetRequestPageResDto result =
+                assetRequestService.getRequestByUserStatus("PENDING", 0, 5, "user");
+
+        assertEquals(1, result.list().size());
+    }
+}

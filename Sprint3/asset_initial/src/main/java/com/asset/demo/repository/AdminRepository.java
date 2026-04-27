@@ -16,4 +16,10 @@ public interface AdminRepository extends JpaRepository<Admin,Long> {
     where a.user.username=?1
 """)
     Admin findByUsername(String name);
+
+    @Query("""
+    select ad.profileImage from AdminDocument ad
+    where ad.admin.user.username=?1
+""")
+    String getProfileUrl(String name);
 }

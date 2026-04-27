@@ -18,110 +18,134 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private final String message="message";
+    private final String message = "message";
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleMethodArgumentNotValidException(
+    public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e
     ){
-        Map<String,Object> map=new HashMap<>();
-        BindingResult bindingResult=e.getBindingResult();
-        List<FieldError> list=bindingResult.getFieldErrors();
-        for(FieldError error:list){
-            map.put(error.getField(),error.getDefaultMessage());
+        log.atWarn().setCause(e)
+                .log("Validation failed in handleMethodArgumentNotValidException()");
+
+        Map<String,Object> map = new HashMap<>();
+        BindingResult bindingResult = e.getBindingResult();
+        List<FieldError> list = bindingResult.getFieldErrors();
+
+        for(FieldError error : list){
+            map.put(error.getField(), error.getDefaultMessage());
         }
+
         return ResponseEntity
                 .status(HttpStatus.EXPECTATION_FAILED)
                 .body(map);
-
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<?> handleHttpMessageNotReadableException(
+    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException e
     ){
-        Map<String,Object>map=new HashMap<>();
+        log.atWarn().setCause(e)
+                .log("Error in handleHttpMessageNotReadableException()");
 
-        map.put(message,e.getMessage());
+        Map<String,Object> map = new HashMap<>();
+        map.put(message, e.getMessage());
+
         return ResponseEntity
                 .status(HttpStatus.EXPECTATION_FAILED)
                 .body(map);
-
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handleResourceNotFoundException(
+    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(
             ResourceNotFoundException e
     ){
-        Map<String,String>map=new HashMap<>();
-        map.put(message,e.getMessage());
+        log.atWarn().setCause(e)
+                .log("Resource not found in handleResourceNotFoundException()");
+
+        Map<String,String> map = new HashMap<>();
+        map.put(message, e.getMessage());
+
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(map);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> handleIllegalArgumentException(
+    public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(
             IllegalArgumentException e
     ){
-        Map<String,Object>map=new HashMap<>();
+        log.atWarn().setCause(e)
+                .log("Illegal argument in handleIllegalArgumentException()");
 
-        map.put(message,e.getMessage());
+        Map<String,Object> map = new HashMap<>();
+        map.put(message, e.getMessage());
+
         return ResponseEntity
                 .status(HttpStatus.EXPECTATION_FAILED)
                 .body(map);
-
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<?> HttpRequestMethodNotSupportedException(
+    public ResponseEntity<Map<String, Object>> HttpRequestMethodNotSupportedException(
             HttpRequestMethodNotSupportedException e
     ){
-        Map<String,Object>map=new HashMap<>();
+        log.atWarn().setCause(e)
+                .log("Method not supported in HttpRequestMethodNotSupportedException()");
 
-        map.put(message,e.getMessage());
+        Map<String,Object> map = new HashMap<>();
+        map.put(message, e.getMessage());
+
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(map);
-
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handleRuntimeException(
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(
             RuntimeException e
     ){
-        Map<String,Object>map=new HashMap<>();
+        log.atWarn().setCause(e)
+                .log("Runtime exception in handleRuntimeException()");
 
-        map.put(message,e.getMessage());
+        Map<String,Object> map = new HashMap<>();
+        map.put(message, e.getMessage());
+
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(map);
-
     }
+
     @ExceptionHandler(UserNotActivatedException.class)
-    public ResponseEntity<?> handleUserNotActivatedException(
+    public ResponseEntity<Map<String, Object>> handleUserNotActivatedException(
             UserNotActivatedException e
     ){
-        Map<String,Object>map=new HashMap<>();
+        log.atWarn().setCause(e)
+                .log("User not activated in handleUserNotActivatedException()");
 
-        map.put(message,e.getMessage());
+        Map<String,Object> map = new HashMap<>();
+        map.put(message, e.getMessage());
+
         return ResponseEntity
                 .status(HttpStatus.LOCKED)
                 .body(map);
-
     }
+
     @ExceptionHandler(DuplicateRequestException.class)
-    public ResponseEntity<?> handleDuplicateRequestException(
+    public ResponseEntity<Map<String, Object>> handleDuplicateRequestException(
             DuplicateRequestException e
     ){
-        Map<String,Object>map=new HashMap<>();
+        log.atWarn().setCause(e)
+                .log("Duplicate request in handleDuplicateRequestException()");
 
-        map.put(message,e.getMessage());
+        Map<String,Object> map = new HashMap<>();
+        map.put(message, e.getMessage());
+
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .body(map);
-
     }
 }

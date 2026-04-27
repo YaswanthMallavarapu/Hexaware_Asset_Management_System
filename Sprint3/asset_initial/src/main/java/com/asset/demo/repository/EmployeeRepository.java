@@ -39,4 +39,10 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
        where e.user.username=?1
 """)
     Employee findByUsername(String name);
+
+    @Query("""
+        select ed.profileImage from EmployeeDocument ed
+        where ed.employee.user.username=?1
+    """)
+    String getProfileUrl(String username);
 }

@@ -1,9 +1,7 @@
 package com.asset.demo.controller;
 
-import com.asset.demo.dto.ServiceRequestPageResDto;
-import com.asset.demo.dto.ServiceRequestReqDto;
-import com.asset.demo.dto.ServiceRequestResDto;
-import com.asset.demo.dto.ServiceRequestResponseDto;
+import com.asset.demo.dto.*;
+import com.asset.demo.enums.ServiceStatus;
 import com.asset.demo.model.ServiceRequest;
 import com.asset.demo.service.ServiceRequestService;
 import lombok.AllArgsConstructor;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.ServerRequest;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping("/api/service-request")
@@ -25,9 +24,9 @@ public class ServiceRequestController {
 
     /* Access : EMPLOYEE */
     @PostMapping("/request-service/{assetAllocationId}")
-    public ResponseEntity<?> requestService(@RequestBody ServiceRequestReqDto serviceRequestReqDto,
-                                            Principal principal,
-                                            @PathVariable long assetAllocationId){
+    public ResponseEntity<Object> requestService(@RequestBody ServiceRequestReqDto serviceRequestReqDto,
+                                                 Principal principal,
+                                                 @PathVariable long assetAllocationId){
         serviceRequestService.requestService(serviceRequestReqDto,principal.getName(),assetAllocationId);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -37,8 +36,8 @@ public class ServiceRequestController {
 
     /* Access : ADMIN */
     @PutMapping("/accept-service-request/{serviceRequestId}")
-    public ResponseEntity<?> acceptServiceRequest(@PathVariable long serviceRequestId,
-                                                  Principal principal){
+    public ResponseEntity<Object> acceptServiceRequest(@PathVariable long serviceRequestId,
+                                                       Principal principal){
 
 
         serviceRequestService.acceptRequest(principal.getName(),serviceRequestId);
@@ -48,8 +47,8 @@ public class ServiceRequestController {
     }
     /* Access : ADMIN */
     @PutMapping("/reject-service-request/{serviceRequestId}")
-    public ResponseEntity<?> rejectServiceRequest(@PathVariable long serviceRequestId,
-                                                  Principal principal){
+    public ResponseEntity<Object> rejectServiceRequest(@PathVariable long serviceRequestId,
+                                                       Principal principal){
 
 
         serviceRequestService.rejectRequest(serviceRequestId,principal.getName());
@@ -59,7 +58,7 @@ public class ServiceRequestController {
     }
     /* Access : ADMIN */
     @PutMapping("/resolved-service-request/{serviceRequestId}")
-    public ResponseEntity<?> resolvedServiceRequest(@PathVariable long serviceRequestId){
+    public ResponseEntity<Object> resolvedServiceRequest(@PathVariable long serviceRequestId){
 
 
         serviceRequestService.resolvedRequest(serviceRequestId);
@@ -137,5 +136,18 @@ public class ServiceRequestController {
         return ResponseEntity
                 .ok()
                 .body(serviceRequestPageResDto);
+    }
+
+    @GetMapping("/service-status")
+    public ResponseEntity<List<FilterResDto>> getUserStatusV2(){
+        List<FilterResDto> list=new ArrayList<>();
+        list.add(new FilterResDto("ALL","ALL"));
+        for (ServiceStatus value : ServiceStatus.values()) {
+            list.add(new FilterResDto(value.toString(),value.toString()));
+        }
+        return  ResponseEntity
+                .ok()
+                .body(list);
+
     }
 }

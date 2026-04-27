@@ -1,6 +1,7 @@
 package com.asset.demo.controller;
 
 import com.asset.demo.dto.*;
+import com.asset.demo.enums.AuditStatus;
 import com.asset.demo.model.Asset;
 import com.asset.demo.model.AssetAllocation;
 import com.asset.demo.model.AssetAuditResult;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping("/api/asset-audit")
@@ -24,7 +26,7 @@ public class AssetAuditController {
     private final AssetAuditService assetAuditService;
     /* Access : ADMIN */
     @PostMapping("/audit/{assetAuditResultId}")
-    public ResponseEntity<?> auditAsset(
+    public ResponseEntity<Object> auditAsset(
             @RequestBody AssetAuditReqDto assetAuditReqDto,
             @PathVariable long assetAuditResultId
     ){
@@ -36,7 +38,7 @@ public class AssetAuditController {
 
     /* ACCESS : ADMIN */
     @PostMapping("/create")
-    public ResponseEntity<?> getAllAssetForAudit(
+    public ResponseEntity<Object> getAllAssetForAudit(
             Principal principal
             ){
         assetAuditService.getAllAssetToBeAudited(principal.getName());
@@ -90,7 +92,18 @@ public class AssetAuditController {
                 .body(assetAuditResStatusdto);
     }
 
+    @GetMapping("/audit-status")
+    public ResponseEntity<List<FilterResDto>> getUserStatusV2(){
+        List<FilterResDto> list=new ArrayList<>();
+        list.add(new FilterResDto("ALL","ALL"));
+        for (AuditStatus value : AuditStatus.values()) {
+            list.add(new FilterResDto(value.toString(),value.toString()));
+        }
+        return  ResponseEntity
+                .ok()
+                .body(list);
 
+    }
 
 
 

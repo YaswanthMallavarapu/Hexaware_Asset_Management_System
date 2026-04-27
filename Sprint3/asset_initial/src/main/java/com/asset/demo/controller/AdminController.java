@@ -4,12 +4,15 @@ import com.asset.demo.dto.AdminDto;
 import com.asset.demo.dto.AdminReqDto;
 import com.asset.demo.dto.AdminResDto;
 import com.asset.demo.dto.AssetAllocationResDto;
+import com.asset.demo.mapper.AdminDocumentResDto;
 import com.asset.demo.service.AdminService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -69,4 +72,26 @@ public class AdminController {
                 .ok()
                 .body(adminResDto);
     }
+
+    @PostMapping("/upload")
+    public ResponseEntity<AdminDocumentResDto> uploadProfile(Principal principal,
+                                                @RequestParam MultipartFile file) throws IOException {
+
+        AdminDocumentResDto adminDocumentResDto =adminService.upload(principal.getName(),file);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(adminDocumentResDto);
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<String> getAdminProfile(Principal principal){
+
+        String url=adminService.getProfile(principal.getName());
+        return ResponseEntity
+                .ok()
+                .body(url);
+
+    }
+
+
 }

@@ -47,10 +47,10 @@ public class User implements UserDetails {
         return List.of(sga);
     }
 
-    @Override
-    public boolean isEnabled() {
-        return this.accountStatus == AccountStatus.APPROVED;
-    }
+//    @Override
+//    public boolean isEnabled() {
+//        return this.accountStatus == AccountStatus.APPROVED;
+//    }
 
 
 }
