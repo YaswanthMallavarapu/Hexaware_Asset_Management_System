@@ -2,13 +2,19 @@ package com.asset.demo.service;
 
 import com.asset.demo.dto.AssetCategoryReqDto;
 import com.asset.demo.dto.CategoryIdDto;
+import com.asset.demo.enums.Role;
 import com.asset.demo.exceptions.ResourceNotFoundException;
 import com.asset.demo.model.AssetCategory;
 import com.asset.demo.repository.AssetCategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
-import org.springframework.data.domain.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +22,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
+@ExtendWith(MockitoExtension.class)
 class AssetCategoryServiceTest {
 
     @Mock
@@ -31,9 +37,13 @@ class AssetCategoryServiceTest {
         AssetCategoryReqDto dto =
                 new AssetCategoryReqDto("Electronics", "Devices");
 
+        AssetCategory category = new AssetCategory();
+        category.setCategoryName("Electronics");
+        category.setDescription("Devices");
+
         assetCategoryService.addCategory(dto);
 
-        verify(assetCategoryRepository).save(any(AssetCategory.class));
+        verify(assetCategoryRepository, times(1)).save(any(AssetCategory.class));
     }
 
     @Test
@@ -41,6 +51,7 @@ class AssetCategoryServiceTest {
 
         AssetCategory category = new AssetCategory();
         category.setId(1L);
+        category.setCategoryName("Electronics");
 
         Page<AssetCategory> page = new PageImpl<>(List.of(category));
 
@@ -58,6 +69,7 @@ class AssetCategoryServiceTest {
 
         AssetCategory category = new AssetCategory();
         category.setId(1L);
+        category.setCategoryName("Electronics");
 
         when(assetCategoryRepository.findById(1L))
                 .thenReturn(Optional.of(category));
@@ -66,6 +78,7 @@ class AssetCategoryServiceTest {
                 assetCategoryService.getAssetCategoryById(1L);
 
         assertNotNull(result);
+        assertEquals(1L, result.getId());
     }
 
     @Test
@@ -74,8 +87,10 @@ class AssetCategoryServiceTest {
         when(assetCategoryRepository.findById(1L))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class,
-                () -> assetCategoryService.getAssetCategoryById(1L));
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> assetCategoryService.getAssetCategoryById(1L)
+        );
     }
 
     @Test
@@ -83,10 +98,11 @@ class AssetCategoryServiceTest {
 
         AssetCategory category = new AssetCategory();
         category.setId(1L);
+        category.setCategoryName("Updated");
 
         assetCategoryService.updateAssetCategory(category);
 
-        verify(assetCategoryRepository).save(category);
+        verify(assetCategoryRepository, times(1)).save(category);
     }
 
     @Test
@@ -113,6 +129,6 @@ class AssetCategoryServiceTest {
                 assetCategoryService.getAllWithId();
 
         assertEquals(1, result.size());
-        assertEquals("Electronics", result.getFirst().name());
+        assertEquals("Electronics", result.get(0).name());
     }
 }

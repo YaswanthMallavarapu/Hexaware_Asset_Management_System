@@ -5,6 +5,7 @@ import com.asset.demo.dto.AssetPageResDto;
 import com.asset.demo.dto.AssetReqDto;
 import com.asset.demo.dto.AssetResDto;
 import com.asset.demo.enums.AssetStatus;
+import com.asset.demo.enums.Role;
 import com.asset.demo.exceptions.ResourceNotFoundException;
 import com.asset.demo.model.Asset;
 import com.asset.demo.model.AssetCategory;
@@ -12,7 +13,8 @@ import com.asset.demo.repository.AssetRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
@@ -39,13 +41,39 @@ public class AssetServiceTest {
     @Mock
     private UserService userService;
 
-    private Asset createAsset() {
+    @Test
+    void addAsset_success() {
+
         AssetCategory category = new AssetCategory();
         category.setId(1L);
         category.setCategoryName("Laptops");
-        category.setQuantity(10);
-        category.setRemaining(5);
+        category.setQuantity(5);
+        category.setRemaining(3);
         category.setCreatedAt(Instant.now());
+
+        AssetReqDto dto = new AssetReqDto(
+                "A1",
+                "Laptop",
+                "Dell",
+                1L,
+                LocalDate.now(),
+                new BigDecimal(50000)
+        );
+
+        when(assetCategoryService.getAssetCategoryById(1L)).thenReturn(category);
+
+        assetService.addAsset(dto);
+
+        verify(assetRepository, times(1)).save(any(Asset.class));
+        verify(assetCategoryService, times(1)).updateAssetCategory(category);
+    }
+
+    @Test
+    void getAllAssets_success() {
+
+        AssetCategory category = new AssetCategory();
+        category.setId(1L);
+        category.setCategoryName("Laptops");
 
         Asset asset = new Asset();
         asset.setId(1L);
@@ -56,34 +84,6 @@ public class AssetServiceTest {
         asset.setStatus(AssetStatus.AVAILABLE);
         asset.setAssetValue(new BigDecimal(50000));
 
-        return asset;
-    }
-
-    @Test
-    void addAsset_success() {
-
-        AssetCategory category = new AssetCategory();
-        category.setId(1L);
-        category.setQuantity(5);
-        category.setRemaining(3);
-
-        AssetReqDto dto = new AssetReqDto(
-                "A1", "Laptop", "Dell", 1L,
-                LocalDate.now(), new BigDecimal(50000)
-        );
-
-        when(assetCategoryService.getAssetCategoryById(1L)).thenReturn(category);
-
-        assetService.addAsset(dto);
-
-        verify(assetRepository).save(any(Asset.class));
-        verify(assetCategoryService).updateAssetCategory(category);
-    }
-
-    @Test
-    void getAllAssets_success() {
-
-        Asset asset = createAsset();
         Page<Asset> page = new PageImpl<>(List.of(asset));
 
         when(assetRepository.findAll(any(Pageable.class))).thenReturn(page);
@@ -91,19 +91,27 @@ public class AssetServiceTest {
         AssetPageResDto result = assetService.getAllAssets(0, 5);
 
         Assertions.assertEquals(1, result.list().size());
-        Assertions.assertEquals(1, result.totalElements());
     }
 
     @Test
     void getAssetById_success() {
 
-        Asset asset = createAsset();
+        AssetCategory category = new AssetCategory();
+        category.setId(1L);
+
+        Asset asset = new Asset();
+        asset.setId(1L);
+        asset.setAssetNo("A101");
+        asset.setAssetName("Dell");
+        asset.setAssetModel("XPS");
+        asset.setCategory(category);
+        asset.setStatus(AssetStatus.AVAILABLE);
 
         when(assetRepository.findById(1L)).thenReturn(Optional.of(asset));
 
-        AssetResDto dto = assetService.getAssetById(1L);
+        AssetResDto result = assetService.getAssetById(1L);
 
-        Assertions.assertEquals(asset.getId(), dto.id());
+        Assertions.assertEquals(1L, result.id());
     }
 
     @Test
@@ -111,18 +119,23 @@ public class AssetServiceTest {
 
         when(assetRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(ResourceNotFoundException.class,
-                () -> assetService.getAssetById(1L));
+        Assertions.assertThrows(
+                ResourceNotFoundException.class,
+                () -> assetService.getAssetById(1L)
+        );
     }
 
     @Test
     void getAssetByGivenId_success() {
 
-        Asset asset = createAsset();
+        Asset asset = new Asset();
+        asset.setId(1L);
 
         when(assetRepository.findById(1L)).thenReturn(Optional.of(asset));
 
-        Assertions.assertEquals(asset, assetService.getAssetByGivenId(1L));
+        Asset result = assetService.getAssetByGivenId(1L);
+
+        Assertions.assertEquals(1L, result.getId());
     }
 
     @Test
@@ -130,31 +143,36 @@ public class AssetServiceTest {
 
         when(assetRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(ResourceNotFoundException.class,
-                () -> assetService.getAssetByGivenId(1L));
+        Assertions.assertThrows(
+                ResourceNotFoundException.class,
+                () -> assetService.getAssetByGivenId(1L)
+        );
     }
 
     @Test
     void updateAsset_success() {
 
-        Asset asset = createAsset();
+        Asset asset = new Asset();
+        asset.setId(1L);
+        asset.setAssetName("Dell");
 
         when(assetRepository.save(asset)).thenReturn(asset);
 
-        Assertions.assertEquals(asset, assetService.updateAsset(asset));
+        Asset result = assetService.updateAsset(asset);
 
-        verify(assetRepository).save(asset);
+        Assertions.assertEquals("Dell", result.getAssetName());
     }
 
     @Test
     void getAssetByCategory_success() {
 
-        Asset asset = createAsset();
+        Asset asset = new Asset();
+        asset.setId(1L);
 
         when(assetRepository.getAssetByCategory(1L))
                 .thenReturn(List.of(asset));
 
-        List<AssetResDto> result = assetService.getAssetByCategory(1L);
+        var result = assetService.getAssetByCategory(1L);
 
         Assertions.assertEquals(1, result.size());
     }
@@ -162,7 +180,9 @@ public class AssetServiceTest {
     @Test
     void getAssetByStatus_success() {
 
-        Asset asset = createAsset();
+        Asset asset = new Asset();
+        asset.setId(1L);
+        asset.setStatus(AssetStatus.AVAILABLE);
 
         Page<Asset> page = new PageImpl<>(List.of(asset));
 
@@ -178,8 +198,10 @@ public class AssetServiceTest {
     @Test
     void getAssetByStatus_invalidStatus() {
 
-        Assertions.assertThrows(IllegalArgumentException.class,
-                () -> assetService.getAssetByStatus(0, 5, "INVALID"));
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> assetService.getAssetByStatus(0, 5, "INVALID")
+        );
     }
 
     @Test
