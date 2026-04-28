@@ -129,6 +129,6 @@ class AssetCategoryServiceTest {
                 assetCategoryService.getAllWithId();
 
         assertEquals(1, result.size());
-        assertEquals("Electronics", result.get(0).name());
+        assertEquals("Electronics", result.getFirst().name());
     }
 }

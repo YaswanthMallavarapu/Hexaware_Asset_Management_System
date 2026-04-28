@@ -17,6 +17,7 @@ const ManagerServiceRequests = () => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState('');
   const [actioningId, setActioningId] = useState(null);
+  const [filters,setFilters]=useState([])
 
   const BASE = 'http://localhost:8082/api/service-request';
 
@@ -61,6 +62,7 @@ const ManagerServiceRequests = () => {
 
   useEffect(() => {
     fetchRequests(page, statusFilter);
+    getAllAccountStatus()
   }, [page, statusFilter]);
 
   const handleStatusFilterChange = (val) => {
@@ -81,6 +83,15 @@ const ManagerServiceRequests = () => {
     }
   };
 
+  const getAllAccountStatus=async()=>{
+    try {
+      const response=await axios.get("http://localhost:8082/api/service-request/service-status",config)
+      setFilters(response.data);
+
+    } catch (error) {
+      handleError(error.message);
+    }
+  }
   const handleReject = async (id) => {
     setActioningId(id);
     setError('');
@@ -110,13 +121,13 @@ const ManagerServiceRequests = () => {
   const handleNext = () => { if (hasMore) setPage((prev) => prev + 1); };
   const handlePrev = () => { if (page > 0) setPage((prev) => prev - 1); };
 
-  const statusFilterButtons = [
-    { label: 'All',         value: 'ALL' },
-    { label: 'Open',        value: 'OPEN' },
-    { label: 'In Progress', value: 'IN_PROGRESS' },
-    { label: 'Resolved',    value: 'RESOLVED' },
-    { label: 'Rejected',    value: 'REJECTED' },
-  ];
+  // const statusFilterButtons = [
+  //   { label: 'All',         value: 'ALL' },
+  //   { label: 'Open',        value: 'OPEN' },
+  //   { label: 'In Progress', value: 'IN_PROGRESS' },
+  //   { label: 'Resolved',    value: 'RESOLVED' },
+  //   { label: 'Rejected',    value: 'REJECTED' },
+  // ];
 
   const serviceStatusStyle = (status) => {
     switch (status) {
@@ -169,7 +180,7 @@ const ManagerServiceRequests = () => {
           >
             Status:
           </span>
-          {statusFilterButtons.map((btn) => (
+          {filters.map((btn) => (
             <button
               key={btn.value}
               onClick={() => handleStatusFilterChange(btn.value)}
@@ -187,7 +198,7 @@ const ManagerServiceRequests = () => {
                 transition: 'all 0.15s',
               }}
             >
-              {btn.label}
+              {btn.name}
             </button>
           ))}
         </div>

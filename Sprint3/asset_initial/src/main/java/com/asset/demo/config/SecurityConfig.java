@@ -63,6 +63,8 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.PUT, "/api/manager/approve-employee/{employeeId}")
                         .hasAuthority(MANAGER)
+                        .requestMatchers(HttpMethod.PUT, "/api/manager/reject-employee/{employeeId}")
+                        .hasAuthority(MANAGER)
 
                         .requestMatchers(HttpMethod.PUT, "/api/manager/get-all/status/{status}")
                         .hasAuthority(ADMIN)
@@ -77,6 +79,8 @@ public class SecurityConfig {
                         .hasAuthority(ADMIN)
 
                         .requestMatchers(HttpMethod.PUT, "/api/admin/approve-manager/{managerId}")
+                        .hasAuthority(ADMIN)
+                        .requestMatchers(HttpMethod.PUT, "/api/admin/reject-manager/{managerId}")
                         .hasAuthority(ADMIN)
 
                         .requestMatchers(HttpMethod.POST, "/api/asset-category/add")
@@ -188,7 +192,7 @@ public class SecurityConfig {
                         .hasAnyAuthority(EMPLOYEE)
 
                         .requestMatchers(HttpMethod.GET, "/api/service-request/service-status")
-                        .hasAnyAuthority(EMPLOYEE)
+                        .authenticated()
 
                         .requestMatchers(HttpMethod.POST, "/api/asset-audit/audit/{assetAuditResultId}")
                         .hasAnyAuthority(MANAGER)

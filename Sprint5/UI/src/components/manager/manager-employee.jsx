@@ -18,6 +18,7 @@ const ManagerEmployees = () => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState('');
   const [approvingId, setApprovingId] = useState(null);
+  const [filters,setFilters]=useState([])
 
   const BASE = 'http://localhost:8082/api/employee';
 
@@ -86,6 +87,7 @@ const ManagerEmployees = () => {
 
   useEffect(() => {
     fetchEmployees(page, accountFilter, statusFilter);
+    getAllAccountStatus()
   }, [page, accountFilter, statusFilter]);
 
   const handleAccountFilterChange = (val) => {
@@ -115,14 +117,38 @@ const ManagerEmployees = () => {
     }
   };
 
+  const handleReject = async (id) => {
+    setApprovingId(id);
+    setError('');
+    try {
+      await axios.put(`http://localhost:8082/api/manager/reject-employee/${id}`, {}, config);
+      fetchEmployees(page, accountFilter, statusFilter, search);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setApprovingId(null);
+    }
+  };
+
+  
+  const getAllAccountStatus=async()=>{
+    try {
+      const response=await axios.get("http://localhost:8082/api/auth/account-status",config)
+      setFilters(response.data);
+
+    } catch (error) {
+      handleError(error.message);
+    }
+  }
+
   const handleNext = () => { if (hasMore) setPage((prev) => prev + 1); };
   const handlePrev = () => { if (page > 0) setPage((prev) => prev - 1); };
 
-  const accountFilterButtons = [
-    { label: 'All', value: 'ALL' },
-    { label: 'Approved', value: 'APPROVED' },
-    { label: 'Pending', value: 'PENDING' },
-  ];
+  // const accountFilterButtons = [
+  //   { label: 'All', value: 'ALL' },
+  //   { label: 'Approved', value: 'APPROVED' },
+  //   { label: 'Pending', value: 'PENDING' },
+  // ];
 
   const userStatusButtons = [
     { label: 'All', value: 'ALL' },
@@ -162,9 +188,9 @@ const ManagerEmployees = () => {
         <div className="d-flex align-items-center gap-2">
           <BsFunnel size={14} className="text-muted" />
           <span className="text-muted" style={{ fontSize: '0.8rem', fontWeight: 500 }}>Account:</span>
-          {accountFilterButtons.map((btn) => (
+          {filters.map((btn) => (
             <button
-              key={btn.value}
+              key={btn.name}
               onClick={() => handleAccountFilterChange(btn.value)}
               style={{
                 border: accountFilter === btn.value ? 'none' : '1px solid #e2e8f0',
@@ -178,7 +204,7 @@ const ManagerEmployees = () => {
                 transition: 'all 0.15s',
               }}
             >
-              {btn.label}
+              {btn.name}
             </button>
           ))}
         </div>
@@ -290,21 +316,22 @@ const ManagerEmployees = () => {
 
                       {/* Account Status */}
                       <td className="px-4 py-3" style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        {emp.accountStatus === 'APPROVED' ? (
+                        {(emp.accountStatus === 'APPROVED' || emp.accountStatus === 'REJECTED' )? (
                           <span className="px-2 py-1 rounded-2" style={{ backgroundColor: '#f0fdf4', color: '#16a34a', fontSize: '0.8rem', fontWeight: 500 }}>
-                            ✓ Approved
+                            {emp.accountStatus}
                           </span>
                         ) : (
                           <span className="px-2 py-1 rounded-2" style={{ backgroundColor: '#fffbeb', color: '#d97706', fontSize: '0.8rem', fontWeight: 500 }}>
-                            ⏳ Pending
+                             Pending
                           </span>
                         )}
                       </td>
 
                       {/* Actions */}
                       <td className="px-4 py-3" style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        {emp.accountStatus !== 'APPROVED' ? (
-                          <button
+                        {(emp.accountStatus !== 'APPROVED' && emp.accountStatus !== 'REJECTED') ? (
+                          <div>
+                            <button
                             onClick={() => handleApprove(emp.id)}
                             disabled={approvingId === emp.id}
                             className="btn btn-sm d-flex align-items-center gap-1"
@@ -320,6 +347,24 @@ const ManagerEmployees = () => {
                             <BsCheckCircle size={14} />
                             {approvingId === emp.id ? 'Approving...' : 'Approve'}
                           </button>
+                          <button
+                            onClick={() => handleReject(emp.id)}
+                            disabled={approvingId === emp.id}
+                            className="btn btn-sm d-flex align-items-center gap-1"
+                            style={{
+                              backgroundColor: '#f0fdf4',
+                              color: '#d70c0c',
+                              border: '1px solid #bbf7d0',
+                              borderRadius: '8px',
+                              fontSize: '0.82rem',
+                              fontWeight: 500,
+                            }}
+                          >
+                            <BsCheckCircle size={14} />
+                            {approvingId === emp.id ? 'Rejecting...' : 'Reject'}
+                          </button>
+                          </div>
+                          
                         ) : (
                           <span className="text-muted" style={{ fontSize: '0.82rem' }}>—</span>
                         )}

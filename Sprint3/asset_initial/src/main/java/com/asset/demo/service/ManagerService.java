@@ -143,4 +143,26 @@ public class ManagerService {
         Manager manager = managerRepository.findByUsernameV2(name);
         return ManagerMapper.mapToDtoV2(manager);
     }
+
+    public void rejectEmployee(long employeeId, String username) {
+        log.atInfo().log("Manager {} rejecting employee id={}", username, employeeId);
+
+        Manager manager = managerRepository.findByUsername(username);
+
+        if (manager.getUser().getAccountStatus() == AccountStatus.PENDING) {
+            log.atWarn().log("Inactive manager {} tried to approve employee", username);
+            throw new ResourceNotFoundException("You Cannot perform this action until your account get verified");
+        }
+
+        Employee employee = employeeService.getEmployeeByGivenId(employeeId);
+        employee.setManager(manager);
+
+        User user = employee.getUser();
+        user.setAccountStatus(AccountStatus.REJECTED);
+        user = userService.insertUser(user);
+
+        employeeService.updateEmployee(employee);
+
+        log.atInfo().log("Employee id={} rejected by manager={}", employeeId, username);
+    }
 }

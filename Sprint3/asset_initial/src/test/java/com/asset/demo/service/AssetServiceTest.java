@@ -166,8 +166,12 @@ public class AssetServiceTest {
     @Test
     void getAssetByCategory_success() {
 
+        AssetCategory category = new AssetCategory();
+        category.setId(1L);
+
         Asset asset = new Asset();
         asset.setId(1L);
+        asset.setCategory(category);
 
         when(assetRepository.getAssetByCategory(1L))
                 .thenReturn(List.of(asset));
@@ -180,13 +184,17 @@ public class AssetServiceTest {
     @Test
     void getAssetByStatus_success() {
 
+        AssetCategory category = new AssetCategory();
+        category.setId(1L);
+
         Asset asset = new Asset();
         asset.setId(1L);
         asset.setStatus(AssetStatus.AVAILABLE);
+        asset.setCategory(category);
 
         Page<Asset> page = new PageImpl<>(List.of(asset));
 
-        when(assetRepository.getByStatus(eq(AssetStatus.AVAILABLE), any(Pageable.class)))
+        when(assetRepository.getByStatus(AssetStatus.AVAILABLE, PageRequest.of(0,5)))
                 .thenReturn(page);
 
         AssetByStatusResDto result =

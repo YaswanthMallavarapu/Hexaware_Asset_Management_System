@@ -16,6 +16,7 @@ const ManagerAssetRequests = () => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState('');
   const [actioningId, setActioningId] = useState(null);
+  const [filters,setFilters]=useState([])
 
   const BASE = 'http://localhost:8082/api/asset-request';
   const ASSET_ALLOCATION = 'http://localhost:8082/api/asset-allocation';
@@ -26,6 +27,16 @@ const ManagerAssetRequests = () => {
       Authorization: 'Bearer ' + localStorage.getItem('token'),
     },
   };
+
+  const getAllAccountStatus=async()=>{
+    try {
+      const response=await axios.get("http://localhost:8082/api/asset-request/request-status",config)
+      setFilters(response.data);
+
+    } catch (error) {
+      handleError(error.message);
+    }
+  }
 
   const handleError = (err) => {
     if (err.response?.status === 401) {
@@ -66,6 +77,7 @@ const ManagerAssetRequests = () => {
 
   useEffect(() => {
     fetchRequests(page, statusFilter);
+    getAllAccountStatus()
   }, [page, statusFilter]);
 
   const handleStatusFilterChange = (val) => {
@@ -102,12 +114,12 @@ const ManagerAssetRequests = () => {
   const handleNext = () => { if (hasMore) setPage((prev) => prev + 1); };
   const handlePrev = () => { if (page > 0) setPage((prev) => prev - 1); };
 
-  const statusFilterButtons = [
-    { label: 'All', value: 'ALL' },
-    { label: 'Pending', value: 'PENDING' },
-    { label: 'Approved', value: 'APPROVED' },
-    { label: 'Rejected', value: 'REJECTED' },
-  ];
+  // const statusFilterButtons = [
+  //   { label: 'All', value: 'ALL' },
+  //   { label: 'Pending', value: 'PENDING' },
+  //   { label: 'Approved', value: 'APPROVED' },
+  //   { label: 'Rejected', value: 'REJECTED' },
+  // ];
 
   const requestStatusStyle = (status) => {
     switch (status) {
@@ -158,7 +170,7 @@ const ManagerAssetRequests = () => {
           >
             Status:
           </span>
-          {statusFilterButtons.map((btn) => (
+          {filters.map((btn) => (
             <button
               key={btn.value}
               onClick={() => handleStatusFilterChange(btn.value)}
@@ -176,7 +188,7 @@ const ManagerAssetRequests = () => {
                 transition: 'all 0.15s',
               }}
             >
-              {btn.label}
+              {btn.name}
             </button>
           ))}
         </div>

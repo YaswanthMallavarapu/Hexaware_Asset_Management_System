@@ -8,7 +8,8 @@ import com.asset.demo.repository.AssetAuditRepository;
 import com.asset.demo.repository.AssetAuditResultRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.data.domain.*;
 
 import java.time.Instant;
@@ -21,16 +22,23 @@ import static org.mockito.Mockito.*;
 @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
 class AssetAuditServiceTest {
 
-    @Mock private AssetAuditRepository assetAuditRepository;
-    @Mock private AssetAuditResultService assetAuditResultService;
-    @Mock private AssetAuditResultRepository assetAuditResultRepository;
-    @Mock private AssetAllocationService assetAllocationService;
-    @Mock private UserService userService;
-    @Mock private AssetService assetService;
-    @Mock private ManagerService managerService;
+    @Mock
+    private AssetAuditRepository auditRepository;
+
+    @Mock
+    private AssetAuditResultService auditResultService;
+
+    @Mock
+    private AssetAuditResultRepository auditResultRepository;
+
+    @Mock
+    private AssetAllocationService allocationService;
+
+    @Mock
+    private ManagerService managerService;
 
     @InjectMocks
-    private AssetAuditService assetAuditService;
+    private AssetAuditService service;
 
     @Test
     void auditAsset_success() {
@@ -38,31 +46,31 @@ class AssetAuditServiceTest {
         AssetAuditResult result = new AssetAuditResult();
         result.setId(1L);
 
-        when(assetAuditResultRepository.findById(1L))
+        when(auditResultRepository.findById(1L))
                 .thenReturn(Optional.of(result));
 
         AssetAuditReqDto dto = new AssetAuditReqDto(AuditStatus.VERIFIED);
 
-        assetAuditService.auditAsset(dto, 1L);
+        service.auditAsset(dto, 1L);
 
         assertEquals(AuditStatus.VERIFIED, result.getStatus());
-        verify(assetAuditResultRepository).save(result);
+        verify(auditResultRepository).save(result);
     }
 
     @Test
-    void auditAsset_notFound() {
+    void auditAsset_fail() {
 
-        when(assetAuditResultRepository.findById(1L))
+        when(auditResultRepository.findById(1L))
                 .thenReturn(Optional.empty());
 
         AssetAuditReqDto dto = new AssetAuditReqDto(AuditStatus.REJECTED);
 
         assertThrows(ResourceNotFoundException.class,
-                () -> assetAuditService.auditAsset(dto, 1L));
+                () -> service.auditAsset(dto, 1L));
     }
 
     @Test
-    void getAllAssetToBeAudited_success() {
+    void getAllAssetToBeAudited() {
 
         Manager manager = new Manager();
         manager.setId(5L);
@@ -73,31 +81,30 @@ class AssetAuditServiceTest {
         when(managerService.getManagerByUsername("manager"))
                 .thenReturn(manager);
 
-        when(assetAllocationService.getAllAllocatedAssets())
+        when(allocationService.getAllAllocatedAssets())
                 .thenReturn(List.of(allocation));
 
-        assetAuditService.getAllAssetToBeAudited("manager");
+        service.getAllAssetToBeAudited("manager");
 
-        verify(assetAuditRepository).save(any(AssetAudit.class));
-        verify(assetAuditResultService)
-                .saveAll(anyList(), any(AssetAudit.class));
+        verify(auditRepository).save(any());
+        verify(auditResultService).saveAll(anyList(), any());
     }
 
     @Test
-    void getAllAuditDates_success() {
+    void getAllAuditDates() {
 
         AuditDateDto dto = new AuditDateDto(1L, 2L, Instant.now());
 
-        when(assetAuditRepository.getAllAuditDates())
+        when(auditRepository.getAllAuditDates())
                 .thenReturn(List.of(dto));
 
-        List<AuditDateDto> dates = assetAuditService.getAllAuditDates();
+        List<AuditDateDto> list = service.getAllAuditDates();
 
-        assertEquals(1, dates.size());
+        assertEquals(1, list.size());
     }
 
     @Test
-    void getAllAuditResults_success() {
+    void getAllAuditResults() {
 
         Asset asset = new Asset();
         asset.setId(10L);
@@ -116,19 +123,20 @@ class AssetAuditServiceTest {
         result.setAudit(audit);
         result.setStatus(AuditStatus.PENDING);
 
-        Page<AssetAuditResult> page = new PageImpl<>(List.of(result));
+        Page<AssetAuditResult> page =
+                new PageImpl<>(List.of(result));
 
-        when(assetAuditResultService.getByAuditId(eq(30L), any(Pageable.class)))
+        when(auditResultService.getByAuditId(30L, PageRequest.of(0, 5)))
                 .thenReturn(page);
 
         List<AssetAuditResultResDto> list =
-                assetAuditService.getAllAuditResults(30L, 0, 5);
+                service.getAllAuditResults(30L, 0, 5);
 
         assertEquals(1, list.size());
     }
 
     @Test
-    void getAllAssetByStatus_success() {
+    void getAllAssetByStatus() {
 
         Asset asset = new Asset();
         asset.setId(10L);
@@ -147,25 +155,26 @@ class AssetAuditServiceTest {
         result.setAudit(audit);
         result.setStatus(AuditStatus.VERIFIED);
 
-        Page<AssetAuditResult> page = new PageImpl<>(List.of(result));
+        Page<AssetAuditResult> page =
+                new PageImpl<>(List.of(result));
 
-        when(assetAuditResultRepository.getAllByAuditIdAndStatus(
-                eq(30L), eq(AuditStatus.VERIFIED), any(Pageable.class)))
+        when(auditResultRepository.getAllByAuditIdAndStatus(
+                30L, AuditStatus.VERIFIED, PageRequest.of(0, 5)))
                 .thenReturn(page);
 
-        AssetAuditResStatusdto response =
-                assetAuditService.getAllAssetByStatus(0, 5, 30L, "VERIFIED");
+        AssetAuditResStatusdto res =
+                service.getAllAssetByStatus(0, 5, 30L, "VERIFIED");
 
-        assertEquals(1, response.list().size());
+        assertEquals(1, res.list().size());
     }
 
     @Test
-    void getCount_success() {
+    void getCount() {
 
-        when(assetAuditRepository.count()).thenReturn(5L);
+        when(auditRepository.count()).thenReturn(5L);
 
-        long count = assetAuditService.getCount();
+        long count = service.getCount();
 
-        assertEquals(5L, count);
+        assertEquals(5, count);
     }
 }

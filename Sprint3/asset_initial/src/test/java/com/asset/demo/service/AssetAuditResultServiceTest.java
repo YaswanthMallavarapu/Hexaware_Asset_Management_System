@@ -1,11 +1,11 @@
 package com.asset.demo.service;
 
-import com.asset.demo.enums.AuditStatus;
 import com.asset.demo.model.*;
 import com.asset.demo.repository.AssetAuditResultRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.data.domain.*;
 
 import java.util.List;
@@ -17,10 +17,10 @@ import static org.mockito.Mockito.*;
 class AssetAuditResultServiceTest {
 
     @Mock
-    private AssetAuditResultRepository assetAuditResultRepository;
+    private AssetAuditResultRepository repository;
 
     @InjectMocks
-    private AssetAuditResultService assetAuditResultService;
+    private AssetAuditResultService service;
 
     @Test
     void saveAll_success() {
@@ -34,10 +34,9 @@ class AssetAuditResultServiceTest {
         AssetAudit audit = new AssetAudit();
         audit.setId(10L);
 
-        assetAuditResultService.saveAll(List.of(allocation1, allocation2), audit);
+        service.saveAll(List.of(allocation1, allocation2), audit);
 
-        verify(assetAuditResultRepository, times(2))
-                .save(any(AssetAuditResult.class));
+        verify(repository, times(2)).save(any());
     }
 
     @Test
@@ -46,13 +45,14 @@ class AssetAuditResultServiceTest {
         AssetAuditResult result = new AssetAuditResult();
         result.setId(1L);
 
-        Page<AssetAuditResult> page = new PageImpl<>(List.of(result));
+        Page<AssetAuditResult> page =
+                new PageImpl<>(List.of(result));
 
-        when(assetAuditResultRepository.getByAuditId(eq(10L), any(Pageable.class)))
+        when(repository.getByAuditId(10L, PageRequest.of(0, 5)))
                 .thenReturn(page);
 
         Page<AssetAuditResult> response =
-                assetAuditResultService.getByAuditId(10L, PageRequest.of(0, 5));
+                service.getByAuditId(10L, PageRequest.of(0, 5));
 
         assertEquals(1, response.getTotalElements());
     }

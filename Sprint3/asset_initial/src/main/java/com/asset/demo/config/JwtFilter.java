@@ -21,13 +21,20 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import java.io.IOException;
 
 @Component
-@AllArgsConstructor
+
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtility jwtUtility;
     private final UserService userService;
+
+    public JwtFilter(JwtUtility jwtUtility, UserService userService) {
+        this.jwtUtility = jwtUtility;
+        this.userService = userService;
+    }
+
+    @Autowired
     @Qualifier("handlerExceptionResolver")
-    private final HandlerExceptionResolver resolver;
+    private HandlerExceptionResolver resolver;
 
 
 

@@ -17,6 +17,7 @@ import com.asset.demo.repository.AdminDocumentRepository;
 import com.asset.demo.repository.AdminRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -143,6 +144,22 @@ public class AdminService {
         log.atInfo().log("Fetching profile for admin: {}", name);
 
         return adminRepository.getProfileUrl(name);
+    }
+
+    public void rejectManager(long managerId, String username) {
+        log.atInfo().log("Admin {} rejecting manager {}", username, managerId);
+        Manager manager = managerService.getManagerByGivenId(managerId);
+        Admin admin = adminRepository.getAdminByUsername(username);
+
+        manager.setAdmin(admin);
+
+        User user = manager.getUser();
+        user.setAccountStatus(AccountStatus.REJECTED);
+
+        userService.insertUser(user);
+        managerService.updateManager(manager);
+
+        log.atInfo().log("Manager {} rejected by {}", managerId, username);
     }
 }
 

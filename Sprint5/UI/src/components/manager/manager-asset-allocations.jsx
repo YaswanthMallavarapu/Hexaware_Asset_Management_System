@@ -15,6 +15,7 @@ const ManagerAssetAllocations = () => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState('');
   const [actioningId, setActioningId] = useState(null);
+  const [filters,setFilters]=useState([])
 
   const BASE = 'http://localhost:8082/api/asset-allocation';
 
@@ -57,8 +58,19 @@ const ManagerAssetAllocations = () => {
     }
   };
 
+  const getAllAccountStatus=async()=>{
+    try {
+      const response=await axios.get("http://localhost:8082/api/asset-allocation/allocation-status",config)
+      setFilters(response.data);
+
+    } catch (error) {
+      handleError(error.message);
+    }
+  }
+
   useEffect(() => {
     fetchAllocations(page, statusFilter);
+    getAllAccountStatus()
   }, [page, statusFilter]);
 
   const handleStatusFilterChange = (val) => {
@@ -82,12 +94,12 @@ const ManagerAssetAllocations = () => {
   const handleNext = () => { if (hasMore) setPage((prev) => prev + 1); };
   const handlePrev = () => { if (page > 0) setPage((prev) => prev - 1); };
 
-  const statusFilterButtons = [
-    { label: 'All', value: 'ALL' },
-    { label: 'Allocated', value: 'ALLOCATED' },
-    { label: 'Return Requested', value: 'RETURN_REQUESTED' },
-    { label: 'Returned', value: 'RETURNED' },
-  ];
+  // const statusFilterButtons = [
+  //   { label: 'All', value: 'ALL' },
+  //   { label: 'Allocated', value: 'ALLOCATED' },
+  //   { label: 'Return Requested', value: 'RETURN_REQUESTED' },
+  //   { label: 'Returned', value: 'RETURNED' },
+  // ];
 
   const allocationStatusStyle = (status) => {
     switch (status) {
@@ -138,7 +150,7 @@ const ManagerAssetAllocations = () => {
           >
             Status:
           </span>
-          {statusFilterButtons.map((btn) => (
+          {filters.map((btn) => (
             <button
               key={btn.value}
               onClick={() => handleStatusFilterChange(btn.value)}
@@ -156,7 +168,7 @@ const ManagerAssetAllocations = () => {
                 transition: 'all 0.15s',
               }}
             >
-              {btn.label}
+              {btn.name}
             </button>
           ))}
         </div>

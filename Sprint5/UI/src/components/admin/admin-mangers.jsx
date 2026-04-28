@@ -78,6 +78,9 @@ const AdminManagers = () => {
     } else if (filter === 'PENDING') {
       fetchManagersByStatus(page, 'PENDING');
     }
+    else if (filter === 'REJECTED') {
+      fetchManagersByStatus(page, 'REJECTED');
+    }
     getAllAccountStatus()
   }, [page, filter]);
 
@@ -94,6 +97,22 @@ const AdminManagers = () => {
       if (filter === 'ALL') fetchAllManagers(page);
       else if (filter === 'APPROVED') fetchManagersByStatus(page, 'APPROVED');
       else if (filter === 'PENDING') fetchManagersByStatus(page, 'PENDING');
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setApprovingId(null);
+    }
+  };
+
+  const handleReject = async (id) => {
+    setApprovingId(id);
+    setError('');
+    try {
+      await axios.put(`http://localhost:8082/api/admin/reject-manager/${id}`, {}, config);
+      if (filter === 'ALL') fetchAllManagers(page);
+      else if (filter === 'APPROVED') fetchManagersByStatus(page, 'APPROVED');
+      else if (filter === 'PENDING') fetchManagersByStatus(page, 'PENDING');
+      else if(filter==='REJECTED')fetchManagersByStatus(page,'REJECTED')
     } catch (err) {
       handleError(err);
     } finally {
@@ -195,9 +214,9 @@ const AdminManagers = () => {
                       </span>
                     </td>
                     <td className="px-4 py-3" style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      {manager.accountStatus === 'APPROVED' ? (
+                      {(manager.accountStatus === 'APPROVED' || manager.accountStatus === 'REJECTED') ? (
                         <span className="px-2 py-1 rounded-2" style={{ backgroundColor: "#f0fdf4", color: "#16a34a", fontSize: "0.8rem", fontWeight: 500 }}>
-                          ✓ Approved
+                           {manager.accountStatus}
                         </span>
                       ) : (
                         <span className="px-2 py-1 rounded-2" style={{ backgroundColor: "#fffbeb", color: "#d97706", fontSize: "0.8rem", fontWeight: 500 }}>
@@ -206,8 +225,9 @@ const AdminManagers = () => {
                       )}
                     </td>
                     <td className="px-4 py-3" style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      {manager.accountStatus !== 'APPROVED' ? (
-                        <button
+                      {(manager.accountStatus !== 'APPROVED'  && manager.accountStatus !== 'REJECTED') ? (
+                        <div>
+                          <button
                           onClick={() => handleApprove(manager.id)}
                           disabled={approvingId === manager.id}
                           className="btn btn-sm d-flex align-items-center gap-1"
@@ -223,6 +243,23 @@ const AdminManagers = () => {
                           <BsCheckCircle size={14} />
                           {approvingId === manager.id ? "Approving..." : "Approve"}
                         </button>
+                        <button
+                          onClick={() => handleReject(manager.id)}
+                          disabled={approvingId === manager.id}
+                          className="btn btn-sm d-flex align-items-center gap-1"
+                          style={{
+                            backgroundColor: "#f0fdf4",
+                            color: "#ee1414",
+                            border: "1px solid #bbf7d0",
+                            borderRadius: "8px",
+                            fontSize: "0.82rem",
+                            fontWeight: 500,
+                          }}
+                        >
+                          <BsCheckCircle size={14} />
+                          {approvingId === manager.id ? "Rejecting..." : "Reject"}
+                        </button>
+                        </div>
                       ) : (
                         <span className="text-muted" style={{ fontSize: "0.82rem" }}>—</span>
                       )}

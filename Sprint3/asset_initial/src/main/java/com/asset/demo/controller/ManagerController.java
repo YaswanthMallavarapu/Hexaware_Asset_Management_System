@@ -58,6 +58,16 @@ public class ManagerController {
             .build();
 
     }
+
+    @PutMapping("/reject-employee/{employeeId}")
+    public ResponseEntity<Object> rejectEmployeeAccount(@PathVariable long employeeId,
+                                                         Principal principal){
+        managerService.rejectEmployee(employeeId,principal.getName());
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .build();
+
+    }
     @GetMapping("/count")
     public ResponseEntity<Long> getAdminsCount(){
         long count=managerService.getCount();
